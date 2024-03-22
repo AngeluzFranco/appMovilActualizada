@@ -207,7 +207,7 @@ export default function Home() {
     return (
    
         <ImageBackground
-            source={require("../assets/fondo3.png")}
+            source={require("../assets/fondo2.png")}
             style={styles.backgroundImage}
         >
 

@@ -20,9 +20,6 @@ const Login = () => {
     let intentos = 0;
     const {url} = Backend();
 
-
-  
-
     const checkUser = async () => {
         try {
             const payload = {user: user, password: password };
@@ -36,7 +33,6 @@ const Login = () => {
             console.log('Response:', response); 
             if(response.ok && response.status === 200){
                 const data = await response.json();
-  
            
                 console.log(data);
                 Alert.alert(`Bienvenido!`,undefined,[
@@ -52,14 +48,11 @@ const Login = () => {
     }
 
     return (
-
-
       
         <ImageBackground
           source={require("../assets/fondo.png")}
           style={styles.backgroundImage}
         >
-  
         
           <View
             style={{ flex: 1, flexDirection: "row", marginTop: '10%' }}
@@ -70,9 +63,6 @@ const Login = () => {
               style={styles.logo}
             />
           </View>
-  
-  
-
 
           <View style={styles.container}>
             {
