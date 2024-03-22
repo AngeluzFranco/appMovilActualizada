@@ -17,6 +17,7 @@ import {
 } from "react-native";
 
 export default function VerificarP(props) {
+    const data = props.route.params.data;
 
     const handleLogout = () => {
         props.navigation.navigate("Home");
@@ -29,25 +30,11 @@ export default function VerificarP(props) {
     const confirmarP = () => {
         props.navigation.replace("Splash");
     }
-
-    const Data = [
-        {
-            title: '1',
-            data: [{ name: 'Bebidas', description: 'Coca-cola', cantidad: 3, precio: 30 }],
-        },
-        {
-            title: '2',
-            data: [{ name: 'Plato Fuerte', description: 'Langosta', cantidad: 2, precio: 1500 }],
-        },
-        {
-            title: '3',
-            data: [{ name: 'Ensaladas', description: 'Ensalada de manzana', cantidad: 1, precio: 100 }],
-        },
-        {
-            title: '4',
-            data: [{ name: 'Postres', description: 'Helado', cantidad: 3, precio: 50 }],
-        },
-    ];
+    const filteredData = data.map(section => ({
+        ...section,
+        data: section.data.filter(item => item.cantidad > 0)
+    }));
+  
 
     return (
         <ImageBackground
@@ -66,22 +53,22 @@ export default function VerificarP(props) {
                 </View>
                 <View style={styles.container2}>
                     <SafeAreaView style={styles.container4}>
-                        <SectionList
-                            sections={Data}
-                            keyExtractor={(item, index) => item + index}
-                            renderItem={({ item }) => (
-                                <View style={styles.container5}>
-                                    <View style={styles.container6}>
-                                        <Text style={styles.item}>{item.name}</Text>
-                                        <Text style={styles.item}>Cantidad: {item.cantidad}</Text>
-                                    </View>
-                                    <View style={styles.container6}>
-                                        <Text style={styles.item}>{item.description}</Text>
-                                        <Text style={styles.item}>Precio: ${item.precio}</Text>
-                                    </View>
-                                </View>
-                            )}
-                        />
+                    <SectionList
+        sections={filteredData}
+        keyExtractor={(item, index) => item + index}
+        renderItem={({ item }) => (
+        <View style={styles.container5}>
+            <View style={styles.container6}>
+                <Text style={styles.item}>{item.name}</Text>
+                <Text style={styles.item}>Cantidad: {item.cantidad}</Text>
+            </View>
+            <View style={styles.container6}>
+                <Text style={styles.item}>{item.description}</Text>
+                <Text style={styles.item}>Precio: ${item.precio}</Text>
+            </View>
+        </View>
+    )}
+/>
                     </SafeAreaView>
                     <View style={styles.container5}>
                         <View style={styles.container6}>

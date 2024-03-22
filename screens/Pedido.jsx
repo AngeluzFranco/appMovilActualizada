@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigation } from '@react-navigation/native';
+
 import {
     View,
     Image,
@@ -13,11 +15,15 @@ import {
     TouchableHighlight
 } from "react-native";
 
-export default function Pedido(props) {
+
+export default function Pedido() {
+
+    const navigation = useNavigation();
 
     const handleLogout = () => {
-        props.navigation.navigate("Home");
+        navigation.replace("Home");
     };
+
 
     return (
         <ImageBackground
@@ -54,6 +60,10 @@ export default function Pedido(props) {
         </ImageBackground>
     );
 }
+
+
+
+
 
 const styles = StyleSheet.create({
     backgroundImage: {

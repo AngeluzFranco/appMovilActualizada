@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import {
     View,
     Image,
@@ -15,21 +15,44 @@ import {
     StatusBar,
 } from "react-native";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { useNavigation } from '@react-navigation/native';
+import { Backend } from "../config/backendconfig";
+
+
+
 
 function MesasDisponibles() {
+  const {url} = Backend();
+  const navigation = useNavigation();
+  const [data, setData] = useState(null);
 
-    const DATA = [
-        {
-            title: '1',
-            data: ['Mesa 1'],
-        },
-        {
-            title: '2',
-            data: ['Mesa 2'],
-        },
-    ];
+  useEffect(() => {
+    const fetchMesas = () => {
+        fetch(url + '/mesas/active/')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Hubo un error en la petición');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);  
+                setData(data.data);
+            })
+            .catch(error => {
+                console.error(error);
+                Alert.alert('Error', 'Hubo un error al obtener las mesas. Por favor, intenta de nuevo más tarde.');
+            });
+    };
 
-    //funcion para abrir el modal de agregar mesa
+    fetchMesas(); 
+
+    const intervalId = setInterval(fetchMesas, 10000); 
+
+    return () => clearInterval(intervalId); 
+}, []);
+
+
     const handleAbrirModal = () => {
         Alert.alert(
             'Confirmación',
@@ -50,22 +73,28 @@ function MesasDisponibles() {
         );
     };
 
+
+    const handleLogout = () => {
+        navigation.replace("Login");
+    };
+
+
     return (
-        //declaramos una imagen de fondo
+
         <ImageBackground
             source={require('../assets/fondo2.png')}
             style={styles.backgroundImage} >
             <SafeAreaView style={styles.container4}>
-                <SectionList
-                    sections={DATA}
-                    keyExtractor={(item, index) => item + index}
-                    renderItem={({ item }) => (
+            <SectionList
+    sections={data ? data.map((item, index) => ({ title: 'Mesa ' + (index + 1), data: [item] })) : []}
+    keyExtractor={(item, index) => item + index}
+    renderItem={({ item }) => (
                         <View style={styles.formContainer}>
                             <View style={styles.container3}>
                                 <View style={styles.column}>
-                                    <Text style={styles.titleNumMesa}>{item}</Text>
-                                    <Text style={styles.titleNombreMesa}>A cargo de: </Text>
-                                    <Text style={styles.titleNombreMesa}>Estado: Desocupada</Text>
+                                <Text style={styles.titleNumMesa}>Mesa {item.numeroMesa}</Text>
+                                <Text style={styles.titleNombreMesa}>Estado: {item.estado}</Text>
+                                <Text style={styles.titleNombreMesa}>Número de sillas: {item.numeroSillas}</Text>
                                 </View>
                                 <View style={styles.column}>
                                     <Image
@@ -87,99 +116,123 @@ function MesasDisponibles() {
     );
 }
 
-function MisMesas(props) {
 
-    const DATA = [
-        {
-            title: '1',
-            data: ['Mesa 1'],
-        },
-        {
-            title: '2',
-            data: ['Mesa 2'],
-        },
-    ];
 
-    //funcion para navegar a la pantalla de menu y pedido
-    const IrMenu = () => props.navigation.navigate("Menu");
-    const IrPedido = () => props.navigation.navigate("Pedido");
 
-    return (
-        //declaramos una imagen de fondo
-        <ImageBackground
-            source={require("../assets/fondo2.png")}
-            style={styles.backgroundImage}
-        >
-            <SafeAreaView style={styles.container4}>
-                <SectionList
-                    sections={DATA}
-                    keyExtractor={(item, index) => item + index}
-                    renderItem={({ item }) => (
-                        <View style={styles.formContainer2}>
-                            <View style={styles.container3}>
-                                <View style={styles.column}>
-                                    <Text style={styles.titleNumMesa}>{item}</Text>
-                                    <Text style={styles.titleNombreMesa}>A cargo de: </Text>
-                                    <Text style={styles.titleNombreMesa}>Estado: Desocupada</Text>
-                                </View>
-                                <View style={styles.column}>
-                                    <TouchableOpacity onPress={IrPedido}>
-                                        <Image
-                                            source={require("../assets/mesa.png")}
-                                            style={styles.mesa} />
-                                    </TouchableOpacity>
-                                    <TouchableHighlight
-                                        style={styles.button}
-                                        activeOpacity={0.6}
-                                        underlayColor="#DDDDDD" onPress={IrMenu}>
-                                        <Text></Text>
-                                    </TouchableHighlight>
 
-                                </View>
+
+function MisMesas() {
+  const {url} = Backend();
+  const navigation = useNavigation();
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchMesas = () => {
+        fetch(url + '/mesas/desactive/')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Hubo un error en la petición');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);  
+                setData(data.data);
+            })
+            .catch(error => {
+                console.error(error);
+                Alert.alert('Error', 'Hubo un error al obtener las mesas. Por favor, intenta de nuevo más tarde.');
+            });
+    };
+
+    fetchMesas();
+
+    const intervalId = setInterval(fetchMesas, 10000); 
+
+    return () => clearInterval(intervalId); 
+}, []);
+
+  const IrMenu = () => navigation.navigate("Menu");
+  const IrPedido = () => navigation.navigate("Pedido");
+
+  return (
+    <ImageBackground
+        source={require("../assets/fondo2.png")}
+        style={styles.backgroundImage}
+    >
+        <SafeAreaView style={styles.container4}>
+            <SectionList
+                sections={data ? data.map((item, index) => ({ title: 'Mesa ' + (index + 1), data: [item] })) : []}
+                keyExtractor={(item, index) => item + index}
+                renderItem={({ item }) => (
+                    <View style={styles.formContainer2}>
+                        <View style={styles.container3}>
+                            <View style={styles.column}>
+                                <Text style={styles.titleNumMesa}>Mesa {item.numeroMesa}</Text>
+                                <Text style={styles.titleNombreMesa}>Estado: {item.estado}</Text>
+                                <Text style={styles.titleNombreMesa}>Número de sillas: {item.numeroSillas}</Text>
                             </View>
-
+                            <View style={styles.column}>
+                                <TouchableOpacity onPress={IrPedido}>
+                                    <Image
+                                        source={require("../assets/mesa.png")}
+                                        style={styles.mesa} />
+                                </TouchableOpacity>
+                                <TouchableHighlight
+                                    style={styles.button}
+                                    activeOpacity={0.6}
+                                    underlayColor="#DDDDDD" onPress={IrMenu}>
+                                    <Text></Text>
+                                </TouchableHighlight>
+                            </View>
                         </View>
-                    )}
-                />
-            </SafeAreaView>
-        </ImageBackground>
-    );
+                    </View>
+                )}
+            />
+        </SafeAreaView>
+    </ImageBackground>
+  );
 };
 
-//declaramos el contenedor de las pestañas
+
 const Tab = createMaterialTopTabNavigator();
 
-export default function Home(props) {
-
-    //funcion para cerrar sesion
+export default function Home() {
+   const navigation = useNavigation();
+  
     const handleLogout = () => {
-        props.navigation.replace("Login");
+        navigation.replace("Login");
     };
 
     return (
-        //declaramos una imagen de fondo
+   
         <ImageBackground
-            source={require("../assets/fondo2.png")}
+            source={require("../assets/fondo3.png")}
             style={styles.backgroundImage}
         >
 
-            {/*declaramos el contenedor principal*/}
             <View style={styles.container}>
-                <View style={{ flex: 1, flexDirection: "row", padding: 20 }}>
-                    <Text style={styles.titleMesas}>Mesas</Text>
-                    <TouchableOpacity onPress={handleLogout}>
-                        <Image
-                            source={require("../assets/gastromanager2.png")}
-                            style={styles.logo}
-                        />
-                    </TouchableOpacity>
-                </View>
+            <View style={{ flex: 1, flexDirection: "row", padding: 10 }}>
+  <Text style={styles.titleMesas}>Mesas</Text>
+  <TouchableOpacity onPress={handleLogout}>
+    <Image
+      source={require("../assets/gastromanager2.png")}
+      style={styles.logo}
+    />
+  </TouchableOpacity>
+</View>
                 <View style={styles.container2}>
-                    {/*declaramos las pestañas y asignamos a cada una la vista correspondiente*/}
-                    <Tab.Navigator>
-                        <Tab.Screen name="Mesas Disponibles" component={MesasDisponibles} />
-                        <Tab.Screen name="Mis Mesas" component={MisMesas} />
-                    </Tab.Navigator>
+                  
+                    <Tab.Navigator
+  screenOptions={{
+    tabBarActiveTintColor: 'white',
+    tabBarInactiveTintColor: 'white',
+    tabBarStyle: { backgroundColor: 'transparent' },
+  }}
+>
+  <Tab.Screen name="Mesas Disponibles" component={MesasDisponibles} />
+  <Tab.Screen name="Mis Mesas" component={MisMesas} />
+</Tab.Navigator>
                 </View>
             </View>
         </ImageBackground>
@@ -210,6 +263,7 @@ const styles = StyleSheet.create({
     logo: {
         width: 60,
         height: 60,
+        marginEnd: 50,
     },
 
     titleMesas: {

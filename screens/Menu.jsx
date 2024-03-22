@@ -22,7 +22,7 @@ export default function Menu(props) {
     const Data = [
         {
             title: '1',
-            data: [{ name: 'coca-cola', description: 'Refresco de cola', cantidad: 1 }],
+            data: [{ name: 'coca-cola', description: 'Refresco de cola', cantidad: 0 }],
         },
         {
             title: '2',
@@ -30,7 +30,7 @@ export default function Menu(props) {
         },
         {
             title: '3',
-            data: [{ name: 'Mirinda', description: 'Refresco de cola', cantidad: 2 }],
+            data: [{ name: 'Mirinda', description: 'Refresco de cola', cantidad: 0 }],
         },
         {
             title: '4',
@@ -46,28 +46,34 @@ export default function Menu(props) {
         },
     ];
 
+
+
+    
+
     const [cantidadH, setCantidad] = useState(Data);
+    const [data, setData] = useState(Data);
 
     const aumentar = (item) => {
-        const updatedCantidad = cantidadH.map(cant => {
-            if (cant === item) {
-                return { ...cant, cantidad: cant.cantidad + 1 };
-            }
-            return cant;
-        });
-        setCantidad(updatedCantidad);
-    };
-
-    const disminuir = (item) => {
-        const updatedCantidad = cantidadH.map(post => {
-            if (post === item) {
-                return { ...post, cantidad: post.cantidad - 1 };
-            }
-            return post;
-        });
-        setCantidad(updatedCantidad);
-    };
-
+        setCantidad(prevCantidad => 
+          prevCantidad.map(section => ({
+            ...section,
+            data: section.data.map(i => 
+              i.name === item.name ? {...i, cantidad: i.cantidad + 1} : i
+            )
+          }))
+        );
+      }
+      
+      const disminuir = (item) => {
+        setCantidad(prevCantidad => 
+          prevCantidad.map(section => ({
+            ...section,
+            data: section.data.map(i => 
+              i.name === item.name && i.cantidad > 0 ? {...i, cantidad: i.cantidad - 1} : i
+            )
+          }))
+        );
+      }
 
     const [verModal, setModalVisible] = useState(false);
 
@@ -83,9 +89,11 @@ export default function Menu(props) {
         props.navigation.navigate("Home");
     }
 
-    const confirmarPedido = () => {
-        props.navigation.replace("VerificarP");
+
+    const handleButtonClick = () => {
+        props.navigation.navigate('VerificarP', { data: cantidadH });
     }
+    
 
     return (
         <ImageBackground
@@ -132,7 +140,7 @@ export default function Menu(props) {
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.loginButton2}
-                                onPress={confirmarPedido}
+                                onPress={handleButtonClick}
                             >
                                 <Text style={styles.buttonText}>Verificar</Text>
                             </TouchableOpacity>
@@ -151,11 +159,26 @@ export default function Menu(props) {
                         <View style={styles.closeModal}>
                             <Button title="X" color="black" onPress={cerrarModal} />
                         </View>
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
                         <SafeAreaView style={styles.container4}>
-                            <SectionList
-                                sections={Data}
-                                keyExtractor={(item, index) => item + index}
-                                renderItem={({ section, item, index }) => (
+                        <SectionList
+  sections={cantidadH}
+  keyExtractor={(item, index) => item + index}
+  renderItem={({ section, item, index }) => (
                                     <View style={styles.cardModal}>
                                         <View style={styles.container3}>
                                             <View style={styles.column}>
@@ -190,6 +213,16 @@ export default function Menu(props) {
                                 )}
                             />
                         </SafeAreaView>
+
+
+
+
+
+
+
+
+
+
                         <TouchableOpacity style={styles.botonConfirmar} onPress={cerrarModal}>
                             <Text style={styles.textBoton2}>Confirmar</Text>
                         </TouchableOpacity>
@@ -215,14 +248,17 @@ const styles = StyleSheet.create({
 
     titleMesas: {
         color: "rgba(255, 255, 255, 100)",
-        fontSize: 50,
+        fontSize: 35,
         fontWeight: "bold",
-        marginRight: "50%",
+        marginRight: "40%",
+        marginTop: 5,
     },
 
     logo: {
         width: 60,
         height: 60,
+        marginStart: 10,
+
     },
 
     container2: {
