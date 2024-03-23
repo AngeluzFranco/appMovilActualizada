@@ -20,90 +20,187 @@ import { Backend } from "../config/backendconfig";
 
 
 
+function MesasDisponibles({ userData }) {
+    const {url} = Backend();
+    const navigation = useNavigation();
+    const [data, setData] = useState(null);
+    console.log('userData en Mesas Disponibles:', userData); // Imprimir userData en la consola
+  
 
-function MesasDisponibles() {
-  const {url} = Backend();
-  const navigation = useNavigation();
-  const [data, setData] = useState(null);
 
-  useEffect(() => {
-    const fetchMesas = () => {
-        fetch(url + '/mesas/active/')
+/*
+  function MisMesas({ userData }) {
+    const { url } = Backend();
+    const navigation = useNavigation();
+    const [data, setData] = useState(null);
+    console.log('userData en Mis Mesas:', userData); // Imprimir userData en la consola
+   
+
+*/ 
+
+
+
+  
+    useEffect(() => {
+      const fetchMesas = () => {
+          fetch(url + '/mesas/active/')
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error('Hubo un error en la petición');
+                  }
+                  return response.json();
+              })
+              .then(data => {
+                  console.log(data);  
+                  setData(data.data);
+              })
+              .catch(error => {
+                  console.error(error);
+                  Alert.alert('Error', 'Hubo un error al obtener las mesas. Por favor, intenta de nuevo más tarde.');
+              });
+      };
+  
+      fetchMesas(); 
+  
+      const intervalId = setInterval(fetchMesas, 10000); 
+  
+      return () => clearInterval(intervalId); 
+  }, []);
+  
+  
+      const handleAbrirModal = () => {
+          Alert.alert(
+              'Confirmación',
+              '¿Estás seguro de que deseas atender esta mesa?',
+              [
+                  {
+                      text: 'Cancelar',
+                      onPress: () => console.log('Cancelado'),
+                      style: 'cancel',
+                  },
+                  {
+                      text: 'Aceptar',
+                      onPress: () => console.log('Aceptado'),
+                      style: 'cancel',
+                  },
+              ],
+              { cancelable: false }
+          );
+      };
+  
+  
+      const handleLogout = () => {
+          navigation.replace("Login");
+      };
+  
+  
+      return (
+  
+          <ImageBackground
+              source={require('../assets/fondo2.png')}
+              style={styles.backgroundImage} >
+              <SafeAreaView style={styles.container4}>
+              <SectionList
+      sections={data ? data.map((item, index) => ({ title: 'Mesa ' + (index + 1), data: [item] })) : []}
+      keyExtractor={(item, index) => item + index}
+      renderItem={({ item }) => (
+                          <View style={styles.formContainer}>
+                              <View style={styles.container3}>
+                                  <View style={styles.column}>
+                                  <Text style={styles.titleNumMesa}>Mesa {item.numeroMesa}</Text>
+                                  <Text style={styles.titleNombreMesa}>Estado: {item.estado}</Text>
+                                  <Text style={styles.titleNombreMesa}>Número de sillas: {item.numeroSillas}</Text>
+                                  </View>
+                                  <View style={styles.column}>
+                                      <Image
+                                          source={require("../assets/mesa.png")}
+                                          style={styles.mesa} />
+                                      <TouchableHighlight
+                                          style={styles.button}
+                                          activeOpacity={0.6}
+                                          underlayColor="#DDDDDD" onPress={handleAbrirModal}>
+                                          <Text></Text>
+                                      </TouchableHighlight>
+                                  </View>
+                              </View>
+                          </View>
+                      )}
+                  />
+              </SafeAreaView>
+          </ImageBackground>
+      );
+  }
+  
+
+  
+  function MisMesas({ userData }) {
+    const { url } = Backend();
+    const navigation = useNavigation();
+    const [data, setData] = useState(null);
+    console.log('userData en Mis Mesas:', userData); // Imprimir userData en la consola
+   
+
+
+
+    
+
+    useEffect(() => {
+        const fetchMesas = () => {
+            fetch(url + '/mesas/usuario/' + userData.data.idUsuario)
             .then(response => {
                 if (!response.ok) {
+                    console.log('Status code:', response.status);
                     throw new Error('Hubo un error en la petición');
                 }
                 return response.json();
             })
-            .then(data => {
-                console.log(data);  
-                setData(data.data);
-            })
-            .catch(error => {
-                console.error(error);
-                Alert.alert('Error', 'Hubo un error al obtener las mesas. Por favor, intenta de nuevo más tarde.');
-            });
-    };
+                .then(data => {
+                    console.log("Respuesta de mis mesas"+ JSON.stringify(data));
+                    setData(data);
+                })
+                .catch(error => {
+                    console.error(error);
+                    Alert.alert('Error', 'Hubo un error al obtener las mesas. Por favor, intenta de nuevo más tarde.');
+                });
+        };
 
-    fetchMesas(); 
+        fetchMesas();
 
-    const intervalId = setInterval(fetchMesas, 10000); 
+        const intervalId = setInterval(fetchMesas, 10000);
 
-    return () => clearInterval(intervalId); 
-}, []);
+        return () => clearInterval(intervalId);
+    }, [userData.idUsuario]); 
 
-
-    const handleAbrirModal = () => {
-        Alert.alert(
-            'Confirmación',
-            '¿Estás seguro de que deseas atender esta mesa?',
-            [
-                {
-                    text: 'Cancelar',
-                    onPress: () => console.log('Cancelado'),
-                    style: 'cancel',
-                },
-                {
-                    text: 'Aceptar',
-                    onPress: () => console.log('Aceptado'),
-                    style: 'cancel',
-                },
-            ],
-            { cancelable: false }
-        );
-    };
-
-
-    const handleLogout = () => {
-        navigation.replace("Login");
-    };
-
+    const IrMenu = () => navigation.navigate("Menu");
+    const IrPedido = () => navigation.navigate("Pedido");
 
     return (
-
         <ImageBackground
-            source={require('../assets/fondo2.png')}
-            style={styles.backgroundImage} >
+            source={require("../assets/fondo2.png")}
+            style={styles.backgroundImage}
+        >
             <SafeAreaView style={styles.container4}>
-            <SectionList
-    sections={data ? data.map((item, index) => ({ title: 'Mesa ' + (index + 1), data: [item] })) : []}
-    keyExtractor={(item, index) => item + index}
-    renderItem={({ item }) => (
-                        <View style={styles.formContainer}>
+                <SectionList
+                    sections={data ? data.map((item, index) => ({ title: 'Mesa ' + (index + 1), data: [item] })) : []}
+                    keyExtractor={(item, index) => item + index}
+                    renderItem={({ item }) => (
+                        <View style={styles.formContainer2}>
                             <View style={styles.container3}>
                                 <View style={styles.column}>
-                                <Text style={styles.titleNumMesa}>Mesa {item.numeroMesa}</Text>
-                                <Text style={styles.titleNombreMesa}>Estado: {item.estado}</Text>
-                                <Text style={styles.titleNombreMesa}>Número de sillas: {item.numeroSillas}</Text>
+                                    <Text style={styles.titleNumMesa}>Mesa {item.numeroMesa}</Text>
+                                    <Text style={styles.titleNombreMesa}>Estado: {item.estado}</Text>
+                                    <Text style={styles.titleNombreMesa}>Número de sillas: {item.numeroSillas}</Text>
                                 </View>
                                 <View style={styles.column}>
-                                    <Image
-                                        source={require("../assets/mesa.png")}
-                                        style={styles.mesa} />
+                                    <TouchableOpacity onPress={IrPedido}>
+                                        <Image
+                                            source={require("../assets/mesa.png")}
+                                            style={styles.mesa} />
+                                    </TouchableOpacity>
                                     <TouchableHighlight
                                         style={styles.button}
                                         activeOpacity={0.6}
-                                        underlayColor="#DDDDDD" onPress={handleAbrirModal}>
+                                        underlayColor="#DDDDDD" onPress={IrMenu}>
                                         <Text></Text>
                                     </TouchableHighlight>
                                 </View>
@@ -114,125 +211,49 @@ function MesasDisponibles() {
             </SafeAreaView>
         </ImageBackground>
     );
-}
-
-
-
-
-
-
-function MisMesas() {
-  const {url} = Backend();
-  const navigation = useNavigation();
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const fetchMesas = () => {
-        fetch(url + '/mesas/desactive/')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Hubo un error en la petición');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);  
-                setData(data.data);
-            })
-            .catch(error => {
-                console.error(error);
-                Alert.alert('Error', 'Hubo un error al obtener las mesas. Por favor, intenta de nuevo más tarde.');
-            });
-    };
-
-    fetchMesas();
-
-    const intervalId = setInterval(fetchMesas, 10000); 
-
-    return () => clearInterval(intervalId); 
-}, []);
-
-  const IrMenu = () => navigation.navigate("Menu");
-  const IrPedido = () => navigation.navigate("Pedido");
-
-  return (
-    <ImageBackground
-        source={require("../assets/fondo2.png")}
-        style={styles.backgroundImage}
-    >
-        <SafeAreaView style={styles.container4}>
-            <SectionList
-                sections={data ? data.map((item, index) => ({ title: 'Mesa ' + (index + 1), data: [item] })) : []}
-                keyExtractor={(item, index) => item + index}
-                renderItem={({ item }) => (
-                    <View style={styles.formContainer2}>
-                        <View style={styles.container3}>
-                            <View style={styles.column}>
-                                <Text style={styles.titleNumMesa}>Mesa {item.numeroMesa}</Text>
-                                <Text style={styles.titleNombreMesa}>Estado: {item.estado}</Text>
-                                <Text style={styles.titleNombreMesa}>Número de sillas: {item.numeroSillas}</Text>
-                            </View>
-                            <View style={styles.column}>
-                                <TouchableOpacity onPress={IrPedido}>
-                                    <Image
-                                        source={require("../assets/mesa.png")}
-                                        style={styles.mesa} />
-                                </TouchableOpacity>
-                                <TouchableHighlight
-                                    style={styles.button}
-                                    activeOpacity={0.6}
-                                    underlayColor="#DDDDDD" onPress={IrMenu}>
-                                    <Text></Text>
-                                </TouchableHighlight>
-                            </View>
-                        </View>
-                    </View>
-                )}
-            />
-        </SafeAreaView>
-    </ImageBackground>
-  );
 };
 
 
-const Tab = createMaterialTopTabNavigator();
 
-export default function Home() {
-   const navigation = useNavigation();
+
+const Tab = createMaterialTopTabNavigator();
   
+
+
+export default function Home({ route }) {
+    const navigation = useNavigation();
+    const { userData } = route.params ? route.params : {};
+
     const handleLogout = () => {
         navigation.replace("Login");
     };
 
     return (
-   
         <ImageBackground
-            source={require("../assets/fondo2.png")}
+            source={require("../assets/fondo3.png")}
             style={styles.backgroundImage}
         >
-
             <View style={styles.container}>
-            <View style={{ flex: 1, flexDirection: "row", padding: 10 }}>
-  <Text style={styles.titleMesas}>Mesas</Text>
-  <TouchableOpacity onPress={handleLogout}>
-    <Image
-      source={require("../assets/gastromanager2.png")}
-      style={styles.logo}
-    />
-  </TouchableOpacity>
-</View>
+                <View style={{ flex: 1, flexDirection: "row", padding: 10 }}>
+                    <Text style={styles.titleMesas}>Mesas</Text>
+                    <TouchableOpacity onPress={handleLogout}>
+                        <Image
+                            source={require("../assets/gastromanager2.png")}
+                            style={styles.logo}
+                        />
+                    </TouchableOpacity>
+                </View>
                 <View style={styles.container2}>
-                  
                     <Tab.Navigator
-  screenOptions={{
-    tabBarActiveTintColor: 'white',
-    tabBarInactiveTintColor: 'white',
-    tabBarStyle: { backgroundColor: 'transparent' },
-  }}
->
-  <Tab.Screen name="Mesas Disponibles" component={MesasDisponibles} />
-  <Tab.Screen name="Mis Mesas" component={MisMesas} />
-</Tab.Navigator>
+                        screenOptions={{
+                            tabBarActiveTintColor: 'white',
+                            tabBarInactiveTintColor: 'white',
+                            tabBarStyle: { backgroundColor: 'transparent' },
+                        }}
+                    >
+                       <Tab.Screen name="Mesas Disponibles" children={() => <MesasDisponibles userData={userData} />} />
+                       <Tab.Screen name="Mis Mesas" children={(props) => userData ? <MisMesas {...props} userData={userData} /> : null} />
+                    </Tab.Navigator>
                 </View>
             </View>
         </ImageBackground>

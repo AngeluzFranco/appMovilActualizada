@@ -20,6 +20,9 @@ const Login = () => {
     let intentos = 0;
     const {url} = Backend();
 
+
+  
+
     const checkUser = async () => {
         try {
             const payload = {user: user, password: password };
@@ -32,15 +35,14 @@ const Login = () => {
             })
             console.log('Response:', response); 
             if(response.ok && response.status === 200){
-                const data = await response.json();
-           
-                console.log(data);
-                Alert.alert(`Bienvenido!`,undefined,[
-                    {
-                        text: 'Gracias', onPress: () => navigation.replace('Home')
-                    }
-                ])
-            }
+              const data = await response.json();
+              console.log(data);
+              Alert.alert(`Bienvenido!`,undefined,[
+                  {
+                      text: 'Gracias', onPress: () => navigation.replace('Home', { userData: data })
+                  }
+              ])
+          }
         } catch (error) {
             console.error('Error:', error);
             Alert.alert('Error', 'Hubo un problema al intentar iniciar sesión. Por favor, inténtalo de nuevo.');
@@ -48,11 +50,14 @@ const Login = () => {
     }
 
     return (
+
+
       
         <ImageBackground
           source={require("../assets/fondo.png")}
           style={styles.backgroundImage}
         >
+  
         
           <View
             style={{ flex: 1, flexDirection: "row", marginTop: '10%' }}
@@ -63,6 +68,9 @@ const Login = () => {
               style={styles.logo}
             />
           </View>
+  
+  
+
 
           <View style={styles.container}>
             {
