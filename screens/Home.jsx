@@ -24,19 +24,8 @@ function MesasDisponibles({ userData }) {
     const {url} = Backend();
     const navigation = useNavigation();
     const [data, setData] = useState(null);
-    console.log('userData en Mesas Disponibles:', userData); // Imprimir userData en la consola
+    console.log('userData en Mesas Disponibles:', userData); 
   
-
-
-/*
-  function MisMesas({ userData }) {
-    const { url } = Backend();
-    const navigation = useNavigation();
-    const [data, setData] = useState(null);
-    console.log('userData en Mis Mesas:', userData); // Imprimir userData en la consola
-   
-
-*/ 
 
 
 
@@ -67,27 +56,74 @@ function MesasDisponibles({ userData }) {
       return () => clearInterval(intervalId); 
   }, []);
   
-  
-      const handleAbrirModal = () => {
-          Alert.alert(
-              'Confirmación',
-              '¿Estás seguro de que deseas atender esta mesa?',
-              [
-                  {
-                      text: 'Cancelar',
-                      onPress: () => console.log('Cancelado'),
-                      style: 'cancel',
-                  },
-                  {
-                      text: 'Aceptar',
-                      onPress: () => console.log('Aceptado'),
-                      style: 'cancel',
-                  },
-              ],
-              { cancelable: false }
-          );
-      };
-  
+
+  const handleAbrirModal = (item) => { 
+    Alert.alert(
+        'Confirmación',
+        '¿Estás seguro de que deseas atender esta mesa?',
+        [
+            {
+                text: 'Cancelar',
+                onPress: () => console.log('Cancelado'),
+                style: 'cancel',
+            },
+            {
+                text: 'Aceptar',
+                onPress: () => {
+                    console.log('Aceptado');
+                    fetch(url + '/pedidos/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            estado: 'En proceso',
+                            usuario: {
+                                idUsuario: userData.data.idUsuario,
+                            },
+                            mesa: {
+                                idMesa: item.numeroMesa,
+                            },
+                        }),
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Hubo un error en la petición');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Respuesta de /pedidos/:', data);
+                            
+                            return fetch(url + '/mesas/' + item.numeroMesa, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    ...item, 
+                                    estado: 'Ocupada', 
+                                }),
+                            });
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Hubo un error en la petición');
+                            }
+                            return response.json();
+                        })
+                        .then(data => console.log('Respuesta de /mesas/:', data))
+                        .catch(error => console.error(error));
+                },
+                style: 'cancel',
+            },
+        ],
+        { cancelable: false }
+    );
+};
+
+
+
   
       const handleLogout = () => {
           navigation.replace("Login");
@@ -101,31 +137,31 @@ function MesasDisponibles({ userData }) {
               style={styles.backgroundImage} >
               <SafeAreaView style={styles.container4}>
               <SectionList
-      sections={data ? data.map((item, index) => ({ title: 'Mesa ' + (index + 1), data: [item] })) : []}
-      keyExtractor={(item, index) => item + index}
-      renderItem={({ item }) => (
-                          <View style={styles.formContainer}>
-                              <View style={styles.container3}>
-                                  <View style={styles.column}>
-                                  <Text style={styles.titleNumMesa}>Mesa {item.numeroMesa}</Text>
-                                  <Text style={styles.titleNombreMesa}>Estado: {item.estado}</Text>
-                                  <Text style={styles.titleNombreMesa}>Número de sillas: {item.numeroSillas}</Text>
-                                  </View>
-                                  <View style={styles.column}>
-                                      <Image
-                                          source={require("../assets/mesa.png")}
-                                          style={styles.mesa} />
-                                      <TouchableHighlight
-                                          style={styles.button}
-                                          activeOpacity={0.6}
-                                          underlayColor="#DDDDDD" onPress={handleAbrirModal}>
-                                          <Text></Text>
-                                      </TouchableHighlight>
-                                  </View>
-                              </View>
-                          </View>
-                      )}
-                  />
+    sections={data ? data.map((item, index) => ({ title: 'Mesa ' + (index + 1), data: [item] })) : []}
+    keyExtractor={(item, index) => item + index}
+    renderItem={({ item }) => (
+        <View style={styles.formContainer}>
+            <View style={styles.container3}>
+                <View style={styles.column}>
+                    <Text style={styles.titleNumMesa}>Mesa {item.numeroMesa}</Text>
+                    <Text style={styles.titleNombreMesa}>Estado: {item.estado}</Text>
+                    <Text style={styles.titleNombreMesa}>Número de sillas: {item.numeroSillas}</Text>
+                </View>
+                <View style={styles.column}>
+                    <Image
+                        source={require("../assets/mesa.png")}
+                        style={styles.mesa} />
+                  <TouchableHighlight
+    style={styles.button}
+    activeOpacity={0.6}
+    underlayColor="#DDDDDD" onPress={() => handleAbrirModal(item)}>
+    <Text></Text>
+</TouchableHighlight>
+                </View>
+            </View>
+        </View>
+    )}
+/>
               </SafeAreaView>
           </ImageBackground>
       );
@@ -137,7 +173,7 @@ function MesasDisponibles({ userData }) {
     const { url } = Backend();
     const navigation = useNavigation();
     const [data, setData] = useState(null);
-    console.log('userData en Mis Mesas:', userData); // Imprimir userData en la consola
+    console.log('userData en Mis Mesas:', userData); 
    
 
 
@@ -157,7 +193,7 @@ function MesasDisponibles({ userData }) {
                 .then(data => {
                     console.log("Respuesta de mis mesas"+ JSON.stringify(data));
                     setData(data);
-                })
+                }) 
                 .catch(error => {
                     console.error(error);
                     Alert.alert('Error', 'Hubo un error al obtener las mesas. Por favor, intenta de nuevo más tarde.');
@@ -171,9 +207,8 @@ function MesasDisponibles({ userData }) {
         return () => clearInterval(intervalId);
     }, [userData.idUsuario]); 
 
-    const IrMenu = () => navigation.navigate("Menu");
-    const IrPedido = () => navigation.navigate("Pedido");
-
+    const IrMenu = () => navigation.navigate("Menu", { userData: userData });
+    const IrPedido = () => navigation.navigate("Pedido", { userData: userData });
     return (
         <ImageBackground
             source={require("../assets/fondo2.png")}

@@ -16,8 +16,16 @@ import {
     StatusBar,
 } from "react-native";
 
-export default function Menu(props) {
+import { useNavigation , useRoute } from '@react-navigation/native';
+import { Backend } from "../config/backendconfig";
 
+
+export default function Menu() {
+    const navigation = useNavigation();
+    const route = useRoute();
+    const userData = route.params.userData;
+
+        console.log("Menu" +userData);
 
     const Data = [
         {
@@ -77,21 +85,20 @@ export default function Menu(props) {
 
     const [verModal, setModalVisible] = useState(false);
 
-    const handleLogout = () => {
-        props.navigation.replace("Login");
-    };
-
     const cerrarModal = () => {
         setModalVisible(false);
     };
 
+    const handleLogout = () => {
+        navigation.replace("Login");
+    };
+
     const cancelarPedido = () => {
-        props.navigation.navigate("Home");
+        navigation.navigate("Home", { userData: userData });
     }
-
-
+    
     const handleButtonClick = () => {
-        props.navigation.navigate('VerificarP', { data: cantidadH });
+        navigation.navigate('VerificarP', { data: cantidadH, userData: userData });
     }
     
 
