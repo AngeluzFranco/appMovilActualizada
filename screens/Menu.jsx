@@ -24,8 +24,9 @@ export default function Menu() {
     const navigation = useNavigation();
     const route = useRoute();
     const userData = route.params.userData;
+    const {url} = Backend();
 
-        console.log("Menu" +userData);
+        console.log("Menu"+userData);
 
     const Data = [
         {
@@ -85,20 +86,17 @@ export default function Menu() {
 
     const [verModal, setModalVisible] = useState(false);
 
-    const cerrarModal = () => {
-        setModalVisible(false);
-    };
 
     const handleLogout = () => {
         navigation.replace("Login");
     };
 
     const cancelarPedido = () => {
-        navigation.navigate("Home", { userData: userData });
+        navigation.navigate("Home");
     }
-    
+
     const handleButtonClick = () => {
-        navigation.navigate('VerificarP', { data: cantidadH, userData: userData });
+        navigation.navigate('VerificarP', { data: cantidadH });
     }
     
 
