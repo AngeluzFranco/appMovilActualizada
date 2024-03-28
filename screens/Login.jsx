@@ -60,7 +60,7 @@ const Login = () => {
   
         
           <View
-            style={{ flex: 1, flexDirection: "row", marginTop: '10%' }}
+            style={{ flex: 1, flexDirection: "row", marginTop: '10%' , justifyContent: 'space-around'}}
           >
             <Text style={styles.titleGastromanager}>Gastromanager</Text>
             <Image
