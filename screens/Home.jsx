@@ -265,7 +265,7 @@ export default function Home({ route }) {
 
     return (
         <ImageBackground
-            source={require("../assets/fondo3.png")}
+            source={require("../assets/fondo2.png")}
             style={styles.backgroundImage}
         >
             <View style={styles.container}>
@@ -273,7 +273,7 @@ export default function Home({ route }) {
                     <Text style={styles.titleMesas}>Mesas</Text>
                     <TouchableOpacity onPress={handleLogout}>
                         <Image
-                            source={require("../assets/gastromanager2.png")}
+                            source={require("../assets/gastromanager3.png")}
                             style={styles.logo}
                         />
                     </TouchableOpacity>
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     },
 
     titleMesas: {
-        color: "rgba(255, 255, 255, 100)",
+        color: "rgba(245, 133, 0, 1)",
         fontSize: 50,
         fontWeight: "bold",
         marginRight: "45%",

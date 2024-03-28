@@ -86,6 +86,10 @@ export default function Menu() {
 
     const [verModal, setModalVisible] = useState(false);
 
+    const cerrarModal = () => {
+        setModalVisible(false);
+    };
+
 
     const handleLogout = () => {
         navigation.replace("Login");
@@ -110,7 +114,7 @@ export default function Menu() {
                     <Text style={styles.titleMesas}>Menu</Text>
                     <TouchableOpacity onPress={handleLogout}>
                         <Image
-                            source={require("../assets/gastromanager2.png")}
+                            source={require("../assets/gastromanager3.png")}
                             style={styles.logo}
                         />
                     </TouchableOpacity>
@@ -252,17 +256,17 @@ const styles = StyleSheet.create({
     },
 
     titleMesas: {
-        color: "rgba(255, 255, 255, 100)",
-        fontSize: 35,
+        color: "rgba(245, 133, 0, 1)",
+        fontSize: 50,
         fontWeight: "bold",
         marginRight: "40%",
-        marginTop: 5,
+        // marginTop: 5,
     },
 
     logo: {
         width: 60,
         height: 60,
-        marginStart: 10,
+        marginStart: 25,
 
     },
 
@@ -300,11 +304,14 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         alignItems: 'center',
         justifyContent: 'center',
-        alignContent: "center"
+        alignContent: "center",
+        borderWidth:2,
+        borderColor:"rgba(255, 0, 0, 1)",
+        
     },
 
     cardtext: {
-        color: "rgba(255, 255, 255, 100)",
+        color: "rgba(0, 0, 0, 1)",
         fontSize: 40,
         fontWeight: "bold",
     },
@@ -313,7 +320,7 @@ const styles = StyleSheet.create({
         marginRight: '35%',
         height: 50,
         width: 100,
-        backgroundColor: "rgba(9,43,90,100)",
+        backgroundColor: "rgba(0, 0, 0, 1)",
         padding: 15,
         borderRadius: 10,
     },
@@ -321,7 +328,7 @@ const styles = StyleSheet.create({
     loginButton2: {
         height: 50,
         width: 100,
-        backgroundColor: "rgba(9,43,90,100)",
+        backgroundColor: "rgba(0, 0, 0, 1)",
         padding: 15,
         borderRadius: 10,
     },
@@ -375,7 +382,7 @@ const styles = StyleSheet.create({
     botonCantidad: {
         alignContent: "center",
         alignItems: "center",
-        backgroundColor: "gray",
+        backgroundColor: "rgba(245, 133, 0, 1)",
         padding: 10,
         borderRadius: 50,
         width: 40,
@@ -404,7 +411,7 @@ const styles = StyleSheet.create({
     botonConfirmar: {
         height: 50,
         width: 100,
-        backgroundColor: "rgba(9,43,90,100)",
+        backgroundColor: "rgba(0, 0, 0, 1)",
         padding: 15,
         borderRadius: 10,
         marginTop: 30,

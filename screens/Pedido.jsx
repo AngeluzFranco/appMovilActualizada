@@ -29,7 +29,7 @@ export default function Pedido(props) {
                     <Text style={styles.titleMesas}>Pedidos</Text>
                     <TouchableOpacity onPress={handleLogout}>
                         <Image
-                            source={require("../assets/gastromanager2.png")}
+                            source={require("../assets/gastromanager3.png")}
                             style={styles.logo}
                         />
                     </TouchableOpacity>
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     },
 
     titleMesas: {
-        color: "rgba(255, 255, 255, 100)",
+        color: "rgba(245, 133, 0, 1)",
         fontSize: 50,
         fontWeight: "bold",
         marginRight: "35%",
@@ -86,14 +86,14 @@ const styles = StyleSheet.create({
     },
 
     titleNumMesa: {
-        color: "rgba(255, 255, 255, 100)",
+        color: "rgba(0, 0, 0, 1)",
         fontSize: 25,
         fontWeight: "bold",
         marginBottom: 20,
     },
 
     titleNombreMesa: {
-        color: "rgba(255, 255, 255, 100)",
+        color: "rgba(0, 0, 0, 1)",
         fontSize: 14,
         fontWeight: "bold",
         marginBottom: 10,
@@ -127,8 +127,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         height: "auto",
         justifyContent: "center",
-        borderWidth: 1,
-        borderColor: '#fff',
+        borderWidth: 2,
+        borderColor: 'rgba(245, 133, 0, 1)',
     },
 
 });

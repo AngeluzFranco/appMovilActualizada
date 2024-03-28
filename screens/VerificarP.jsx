@@ -46,7 +46,7 @@ export default function VerificarP(props) {
                     <Text style={styles.titleMesas}>Pedidos</Text>
                     <TouchableOpacity onPress={handleLogout}>
                         <Image
-                            source={require("../assets/gastromanager2.png")}
+                            source={require("../assets/gastromanager3.png")}
                             style={styles.logo}
                         />
                     </TouchableOpacity>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     },
 
     titleMesas: {
-        color: "rgba(255, 255, 255, 100)",
+        color: "rgba(245, 133, 0, 1)",
         fontSize: 50,
         fontWeight: "bold",
         marginRight: "35%",
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     loginButton: {
         height: 50,
         width: 100,
-        backgroundColor: "rgba(9,43,90,100)",
+        backgroundColor: "rgba(0, 0, 0, 1)",
         padding: 15,
         borderRadius: 10,
     },
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
 
     item: {
         fontSize: 14,
-        color: "rgba(255, 255, 255, 100)",
+        color: "rgba(0, 0, 0, 1)",
     },
 
 });
