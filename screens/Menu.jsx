@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Image,
@@ -14,9 +14,10 @@ import {
     SafeAreaView,
     SectionList,
     StatusBar,
+    ScrollView
 } from "react-native";
 
-import { useNavigation , useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Backend } from "../config/backendconfig";
 
 
@@ -24,87 +25,118 @@ export default function Menu() {
     const navigation = useNavigation();
     const route = useRoute();
     const userData = route.params.userData;
-    const {url} = Backend();
+    const { url } = Backend();
 
-        console.log("Menu"+userData);
-
-    const Data = [
-        {
-            title: '1',
-            data: [{ name: 'coca-cola', description: 'Refresco de cola', cantidad: 0 }],
-        },
-        {
-            title: '2',
-            data: [{ name: 'Fanta', cantidad: 0 }],
-        },
-        {
-            title: '3',
-            data: [{ name: 'Mirinda', description: 'Refresco de cola', cantidad: 0 }],
-        },
-        {
-            title: '4',
-            data: [{ name: 'Fanta', cantidad: 0 }],
-        },
-        {
-            title: '5',
-            data: [{ name: 'Fanta', cantidad: 0 }],
-        },
-        {
-            title: '6',
-            data: [{ name: 'Fanta', cantidad: 0 }],
-        },
-    ];
+    // console.log("Menu"+userData);
 
 
 
-    
 
-    const [cantidadH, setCantidad] = useState(Data);
-    const [data, setData] = useState(Data);
 
-    const aumentar = (item) => {
-        setCantidad(prevCantidad => 
-          prevCantidad.map(section => ({
-            ...section,
-            data: section.data.map(i => 
-              i.name === item.name ? {...i, cantidad: i.cantidad + 1} : i
-            )
-          }))
-        );
-      }
-      
-      const disminuir = (item) => {
-        setCantidad(prevCantidad => 
-          prevCantidad.map(section => ({
-            ...section,
-            data: section.data.map(i => 
-              i.name === item.name && i.cantidad > 0 ? {...i, cantidad: i.cantidad - 1} : i
-            )
-          }))
-        );
-      }
+    const [categorias, setCategorias] = useState({});
 
-    const [verModal, setModalVisible] = useState(false);
+    const [platillosSeleccionados, setPlatillosSeleccionados] = useState({});
+
+
+    const [verModal, setVerModal] = useState(false);
+
+
+
+    useEffect(() => {
+        const fetchCategorias = async () => {
+            try {
+                const response = await fetch(url + '/platillo/');
+                if (!response.ok) {
+                    throw new Error('Hubo un error en la petición');
+                }
+                const data = await response.json();
+                const categorias = data.data.reduce((acc, platillo) => {
+                    if (!acc[platillo.categoria]) {
+                        acc[platillo.categoria] = [];
+                    }
+                    acc[platillo.categoria].push(platillo);
+                    return acc;
+                }, {});
+                setCategorias(categorias);
+            } catch (error) {
+                console.error(error);
+                Alert.alert('Error', 'Hubo un error al obtener las categorías. Por favor, intenta de nuevo más tarde.');
+            }
+        };
+
+        fetchCategorias();
+
+        const intervalId = setInterval(fetchCategorias, 10000);
+
+        return () => clearInterval(intervalId);
+    }, [userData.idUsuario]);
+
+
+    const handleCategoriaPress = (categoria) => {
+        const platillos = categorias[categoria].map(platillo => ({
+            ...platillo,
+            cantidad: 0,
+        }));
+        setPlatillosSeleccionados(prevPlatillos => ({
+            ...prevPlatillos,
+            [categoria]: platillos
+        }));
+        setVerModal(true);
+    };
+
 
     const cerrarModal = () => {
-        setModalVisible(false);
+        setVerModal(false);
     };
 
+
+    const [cantidad, setCantidad] = useState([{ data: [] }]);
+    const [data, setData] = useState({});
+    const [cantidades, setCantidades] = useState({});
+
+    const aumentar = (item) => {
+        setCantidades(prevCantidades => ({
+            ...prevCantidades,
+            [item.nombre]: (prevCantidades[item.nombre] || 0) + 1
+        }));
+    };
+
+    const disminuir = (item) => {
+        setCantidades(prevCantidades => ({
+            ...prevCantidades,
+            [item.nombre]: Math.max((prevCantidades[item.nombre] || 0) - 1, 0)
+        }));
+    };
 
     const handleLogout = () => {
-        navigation.replace("Login");
+        navigation.replace('Login');
     };
 
+
+
     const cancelarPedido = () => {
-        navigation.navigate("Home");
+        navigation.navigate('Home', { userData: data });
     }
+
+
 
     const handleButtonClick = () => {
-        navigation.navigate('VerificarP', { data: cantidadH });
-    }
+        const platillosConCantidad = Object.keys(platillosSeleccionados).reduce((acc, categoria) => {
+            const platillos = platillosSeleccionados[categoria].filter(platillo => cantidades[platillo.nombre] > 0);
+            if (platillos.length > 0) {
+                acc[categoria] = platillos;
+            }
+            return acc;
+        }, {});
     
 
+        console.log('platillosConCantidad:', JSON.stringify(platillosConCantidad, null, 2));
+        console.log('cantidades:', JSON.stringify(cantidades, null, 2));
+    navigation.navigate('VerificarP', { userData: userData, platillosSeleccionados: platillosConCantidad, cantidades: cantidades });
+}
+    
     return (
+
         <ImageBackground
             source={require("../assets/fondo2.png")}
             style={styles.backgroundImage}
@@ -120,47 +152,61 @@ export default function Menu() {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.container2}>
-                    <View style={styles.row}>
-                        <View style={styles.card}>
-                            <TouchableOpacity onPress={() => setModalVisible(true)}>
-                                <Text style={styles.cardtext}>Bebidas</Text>
+                <ScrollView>
+                <View style={styles.row}>
+                    {categorias && Object.keys(categorias).map((categoria, index) => (
+                        <View key={index} style={styles.card}>
+                            <TouchableOpacity onPress={() => handleCategoriaPress(categoria)}>
+                                <Text style={styles.cardtext}>{categoria}</Text>
                             </TouchableOpacity>
                         </View>
-                        <View style={styles.card}>
-                            <TouchableOpacity onPress={() => setModalVisible(true)}>
-                                <Text style={styles.cardtext}>Postres</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.card}>
-                            <TouchableOpacity onPress={() => setModalVisible(true)}>
-                                <Text style={styles.cardtext}> Plato Fuerte</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.card}>
-                            <TouchableOpacity onPress={() => setModalVisible(true)}>
-                                <Text style={styles.cardtext}>Ensalada</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{ flexDirection: 'row', marginTop: '20%' }} >
-                            <TouchableOpacity onPress={cancelarPedido}
-                                style={styles.loginButton}
-                            >
-                                <Text style={styles.buttonText}>Cancelar</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.loginButton2}
-                                onPress={handleButtonClick}
-                            >
-                                <Text style={styles.buttonText}>Verificar</Text>
-                            </TouchableOpacity>
-                        </View>
+                    ))}
+                </View>
+            </ScrollView>
+                    <View style={{ flexDirection: 'row', marginTop: '20%' }}>
+
+
+                        <TouchableOpacity onPress={cancelarPedido}
+                            style={styles.loginButton}
+                        >
+                            <Text style={styles.buttonText}>Cancelar</Text>
+                        </TouchableOpacity>
+
+
+
+
+
+
+                        <TouchableOpacity
+                            style={styles.loginButton2}
+                            onPress={() => {
+
+                                const platillosArray = Object.values(platillosSeleccionados);
+
+                              
+                                platillosArray.forEach(platillos => {
+                                    platillos.forEach(platillo => {
+                                        platillo.cantidad = cantidades[platillo.nombre] || 0;
+                                    });
+                                });
+                                
+                                const platillosConCantidad = platillosArray.map(platillos =>
+                                    platillos.filter(platillo => platillo.cantidad > 0)
+                                ).filter(platillos => platillos.length > 0);
+                                
+                                console.log('platillosConCantidad:', JSON.stringify(platillosConCantidad, null, 2));
+                                console.log('cantidades:', JSON.stringify(cantidades, null, 2));
+                                navigation.navigate('VerificarP', { userData: userData, platillosSeleccionados: platillosConCantidad, cantidades: cantidades });   }}
+                        >
+                            <Text style={styles.buttonText}>Verificar</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </View>
             <Modal
                 visible={verModal}
                 animationType="slide"
-                onRequestClose={() => setModalVisible(true)}
+                onRequestClose={cerrarModal}
                 transparent={true}
             >
                 <View style={styles.modalContainer}>
@@ -168,50 +214,46 @@ export default function Menu() {
                         <View style={styles.closeModal}>
                             <Button title="X" color="black" onPress={cerrarModal} />
                         </View>
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
                         <SafeAreaView style={styles.container4}>
-                        <SectionList
-  sections={cantidadH}
-  keyExtractor={(item, index) => item + index}
-  renderItem={({ section, item, index }) => (
+
+
+
+
+                            <SectionList
+                                sections={Object.entries(platillosSeleccionados).map(([title, data]) => ({
+                                    title,
+                                    data
+                                }))}
+                                keyExtractor={(item, index) => item + index}
+                                renderItem={({ item, section }) => (
                                     <View style={styles.cardModal}>
                                         <View style={styles.container3}>
                                             <View style={styles.column}>
-                                                {item && item.name && (
-                                                    <Text style={styles.titleNumMesa}>{item.name}</Text>
+                                                {item && item.nombre && (
+                                                    <Text style={styles.titleNumMesa}>{item.nombre}</Text>
                                                 )}
-                                                {item && item.description && (
-                                                    <Text style={styles.titleNombreMesa}>{item.description}</Text>
+                                                {item && item.descripcion && (
+                                                    <Text style={styles.titleNombreMesa}>{item.descripcion}</Text>
                                                 )}
                                             </View>
                                             <View style={styles.column}>
                                                 <View style={styles.row2}>
                                                     <TouchableOpacity
                                                         style={styles.botonCantidad}
-                                                        onPress={() => disminuir(item)}
+                                                        onPress={() => {
+                                                            disminuir(item);
+                                                        }}
                                                     >
                                                         <Text style={styles.textBoton}>-</Text>
                                                     </TouchableOpacity>
                                                     <Text style={styles.inputForm}>
-                                                    {item.cantidad}
+                                                        {cantidades[item.nombre] || 0}
                                                     </Text>
                                                     <TouchableOpacity
                                                         style={styles.botonCantidad}
-                                                        onPress={() => aumentar(item)}
+                                                        onPress={() => {
+                                                            aumentar(item);
+                                                        }}
                                                     >
                                                         <Text style={styles.textBoton}>+</Text>
                                                     </TouchableOpacity>
@@ -221,17 +263,8 @@ export default function Menu() {
                                     </View>
                                 )}
                             />
+
                         </SafeAreaView>
-
-
-
-
-
-
-
-
-
-
                         <TouchableOpacity style={styles.botonConfirmar} onPress={cerrarModal}>
                             <Text style={styles.textBoton2}>Confirmar</Text>
                         </TouchableOpacity>
@@ -241,6 +274,7 @@ export default function Menu() {
         </ImageBackground>
     );
 }
+
 
 const styles = StyleSheet.create({
     backgroundImage: {
@@ -260,7 +294,7 @@ const styles = StyleSheet.create({
         fontSize: 50,
         fontWeight: "bold",
         marginRight: "40%",
-        // marginTop: 5,
+
     },
 
     logo: {
@@ -297,7 +331,7 @@ const styles = StyleSheet.create({
     card: {
         width: '85%',
         padding: 20,
-        height: '17%',
+        height: '15%',
         margin: 10,
         backgroundColor: 'rgba(255, 255, 255, 0.33)',
         marginTop: 20,
@@ -305,9 +339,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         alignContent: "center",
-        borderWidth:2,
-        borderColor:"rgba(255, 0, 0, 1)",
-        
+        borderWidth: 2,
+        borderColor: "rgba(255, 0, 0, 1)",
+
     },
 
     cardtext: {

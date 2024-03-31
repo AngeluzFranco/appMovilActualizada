@@ -13,10 +13,10 @@ import {
     TouchableHighlight
 } from "react-native";
 
-export default function Pedido(props) {
+export default function Pedido({ navigation }) {
 
     const handleLogout = () => {
-        props.navigation.navigate("Home");
+        navigation.navigate("Home");
     };
 
     return (

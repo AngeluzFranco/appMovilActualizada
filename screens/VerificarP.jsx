@@ -16,64 +16,87 @@ import {
     StatusBar,
 } from "react-native";
 
-export default function VerificarP(props) {
-    const data = props.route.params.data;
+export default function VerificarP({ route, navigation }) {
+    const { platillosSeleccionados, userData } = route.params;
+
+    console.log('platillosSeleccionados:', JSON.stringify(platillosSeleccionados, null, 2));
+    console.log("userData"+JSON.stringify(userData));
+
 
     const handleLogout = () => {
-        props.navigation.navigate("Home");
+        navigation.navigate("Home");
     };
 
     const editarP = () => {
-        props.navigation.navigate("Menu");
+        navigation.navigate("Menu", { userData: userData, platillosSeleccionados: platillosSeleccionados });
     }
-
     const confirmarP = () => {
-        props.navigation.replace("Splash");
+        navigation.replace("Splash");
     }
-    const filteredData = data.map(section => ({
-        ...section,
-        data: section.data.filter(item => item.cantidad > 0)
-    }));
-  
+ 
+    const filteredData = platillosSeleccionados ? platillosSeleccionados.map(section => {
+        const data = Object.keys(section)
+            .filter(key => key !== 'data' && section[key].cantidad > 0)
+            .map(key => section[key]);
+        return {
+            ...section,
+            data: data
+        };
+    }) : [];
+    console.log('filteredData:', JSON.stringify(filteredData, null, 2));
 
-    return (
-        <ImageBackground
-            source={require("../assets/fondo2.png")}
-            style={styles.backgroundImage}
-        >
-            <View style={styles.container}>
-                <View style={{ flex: 1, flexDirection: "row", padding: 10 }}>
-                    <Text style={styles.titleMesas}>Pedidos</Text>
-                    <TouchableOpacity onPress={handleLogout}>
-                        <Image
-                            source={require("../assets/gastromanager3.png")}
-                            style={styles.logo}
-                        />
+
+    const calcularTotal = () => {
+        let total = 0;
+        filteredData.forEach(section => {
+            section.data.forEach(item => {
+                total += item.precio * item.cantidad;
+            });
+        });
+        return total;
+    }
+    
+    const total = calcularTotal();
+
+return (
+    <ImageBackground
+        source={require("../assets/fondo2.png")}
+        style={styles.backgroundImage}
+    >
+        <View style={styles.container}>
+            <View style={{ flex: 1, flexDirection: "row", padding: 10 }}>
+                <Text style={styles.titleMesas}>Pedidos</Text>
+                <TouchableOpacity onPress={handleLogout}>
+                    <Image
+                        source={require("../assets/gastromanager3.png")}
+                        style={styles.logo}
+                    />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.container2}>
                     <SafeAreaView style={styles.container4}>
                     <SectionList
-        sections={filteredData}
-        keyExtractor={(item, index) => item + index}
-        renderItem={({ item }) => (
-        <View style={styles.container5}>
-            <View style={styles.container6}>
-                <Text style={styles.item}>{item.name}</Text>
-                <Text style={styles.item}>Cantidad: {item.cantidad}</Text>
-            </View>
-            <View style={styles.container6}>
-                <Text style={styles.item}>{item.description}</Text>
-                <Text style={styles.item}>Precio: ${item.precio}</Text>
-            </View>
-        </View>
-    )}
+  sections={filteredData}
+  keyExtractor={(item, index) => item + index}
+  renderItem={({ item }) => (
+    <View style={styles.container5}>
+      <View style={styles.container6}>
+        <Text style={styles.item}>{item.nombre}</Text>
+        <Text style={styles.item}>Cantidad: {item.cantidad}</Text>
+      </View>
+      <View style={styles.container6}>
+        <Text style={styles.item}>{item.menu.descripcion}</Text>
+        <Text style={styles.item}>Precio: ${item.precio}</Text>
+      </View>
+    </View>
+  )}
 />
+
                     </SafeAreaView>
                     <View style={styles.container5}>
                         <View style={styles.container6}>
                             <Text style={styles.item}>Pedido Mesa: 1</Text>
-                            <Text style={styles.item}>Total: 5,000</Text>
+                            <Text style={styles.item}>Total: ${total}</Text>
                         </View>
                         <View style={styles.container6}>
                             <Text style={styles.item}>A Nombre de: Miranda</Text>

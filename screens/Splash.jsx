@@ -10,7 +10,7 @@ const Splash = () => {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      navigation.replace('Pedido');
+      navigation.replace('Pedido',  { userData: data });
     }, 1000);
 
     return () => clearTimeout(timeoutId);
