@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {
     View,
     Image,
@@ -14,9 +15,14 @@ import {
 } from "react-native";
 
 export default function Pedido({ navigation }) {
+    const route = useRoute();
+    const data = route.params?.data;
+    const userData = route.params?.userData; // Add this line
+
+    console.log('userData en Pedido:', JSON.stringify(userData, null, 2));
 
     const handleLogout = () => {
-        navigation.navigate("Home");
+        navigation.navigate("Home", { userData: userData });
     };
 
     return (

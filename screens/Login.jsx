@@ -7,6 +7,7 @@ import { StyleSheet, View,   Alert,
     Text,
     TouchableOpacity, } from 'react-native';
 import { Backend } from '../config/backendconfig';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 
   import Icon from "react-native-vector-icons/FontAwesome";
@@ -76,7 +77,8 @@ const Login = () => {
             {
               <View style={styles.container}>
                 <View style={styles.formContainer}>
-                  <Text style={styles.titleLogin}>Sign in</Text>
+             
+                  <Text style={styles.titleLogin}>Bienvenido</Text>
                   <Text style={styles.TextLogin}>
                     Inicie sesión para poder acceder a las funciones del sistema
                   </Text>
@@ -119,85 +121,72 @@ const Login = () => {
     const styles = StyleSheet.create({
       loginButton: {
         backgroundColor: "rgba(9,43,90,100)",
-        padding: 15,
-        borderRadius: 10,
-        marginTop: 80,
-      },
-  
-      buttonText: {
+        padding: hp('2%'),
+        borderRadius: hp('1.5%'),
+        marginTop: hp('10%'),
+    },
+    buttonText: {
         color: "white",
         textAlign: "center",
         fontWeight: "bold",
-      },
-  
-      container: {
+    },
+    container: {
         flex: 1,
         justifyContent: "center",
-        padding: 20,
-        
-
-      },
-  
-      backgroundImage: {
+        padding: wp('5%'),
+    },
+    backgroundImage: {
         flex: 1,
         resizeMode: "cover",
-      },
-  
-      inputContainer: {
+    },
+    inputContainer: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 20,
-      },
-  
-      icon: {
-        marginRight: 10,
-      },
-  
-      inputForm: {
+        marginBottom: hp('2.5%'),
+    },
+    icon: {
+        marginRight: wp('2%'),
+    },
+    inputForm: {
         flex: 1,
         borderBottomColor: "rgba(255, 255, 255, 100)",
-        borderBottomWidth: 3,
-        borderRadius: 5,
-        padding: 10,
-        marginVertical: 5,
+        borderBottomWidth: wp('0.5%'),
+        borderRadius: wp('1%'),
+        padding: wp('2%'),
+        marginVertical: hp('0.5%'),
         color: "rgba(255, 255, 255, 100)",
-      },
-  
-      formContainer: {
-        marginTop: -350,
-        padding: 10,
+    },
+    formContainer: {
+        marginTop: -hp('45%'),
+        padding: wp('2%'),
         backgroundColor: "rgba(0, 0, 0, 0.3)",
-        borderRadius: 20,
-        height: 500,
+        borderRadius: wp('5%'),
+        height: hp('65%'),
         justifyContent: "center",
-      },
-  
-      titleLogin: {
+    },
+    titleLogin: {
         color: "rgba(120, 168, 144, 100)",
-        fontSize: 50,
+        fontSize: wp('13%'),
         fontWeight: "bold",
-      },
-  
-      TextLogin: {
+    },
+    TextLogin: {
         color: "rgba(120, 168, 144, 100)",
-        fontSize: 20,
-        marginBottom: 40,
-        marginTop: 20,
-      },
-  
-      logo: {
-        width: 60,
-        height: 60,
-        marginRight: 10,
-        marginStart: 30,
-      },
-  
-      titleGastromanager: {
+        fontSize: wp('5%'),
+        marginBottom: hp('5%'),
+        marginTop: hp('2.5%'),
+    },
+    logo: {
+        width: wp('18%'),
+        height: hp('8%'),
+        marginRight: wp('2%'),
+        marginStart: wp('3%'),
+    },
+    titleGastromanager: {
         color: "rgba(255, 255, 255, 100)",
-        fontSize: 35,
+        fontSize: wp('9%'),
         fontWeight: "bold",
-        marginTop: 5,
-      },
+        marginTop: hp('0.5%'),
+    },
     });
 
 export default Login;

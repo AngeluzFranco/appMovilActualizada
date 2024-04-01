@@ -20,18 +20,32 @@ export default function VerificarP({ route, navigation }) {
     const { platillosSeleccionados, userData } = route.params;
 
     console.log('platillosSeleccionados:', JSON.stringify(platillosSeleccionados, null, 2));
-    console.log("userData"+JSON.stringify(userData));
+    console.log("userData VPedido"+JSON.stringify(userData));
 
 
     const handleLogout = () => {
-        navigation.navigate("Home");
+        navigation.navigate("Home", { userData: userData });
     };
 
     const editarP = () => {
         navigation.navigate("Menu", { userData: userData, platillosSeleccionados: platillosSeleccionados });
     }
+
+    
     const confirmarP = () => {
-        navigation.replace("Splash");
+        console.log('platillosSeleccionados:', platillosSeleccionados);
+        console.log('userData:', userData);
+        console.log('total:', total);
+    
+        if (navigation && typeof navigation.replace === 'function') {
+            navigation.replace("Splash", {
+                platillosSeleccionados: platillosSeleccionados,
+                userData: userData,
+                total: total
+            });
+        } else {
+            console.error('navigation or navigation.replace is not defined');
+        }
     }
  
     const filteredData = platillosSeleccionados ? platillosSeleccionados.map(section => {
@@ -58,6 +72,9 @@ export default function VerificarP({ route, navigation }) {
     
     const total = calcularTotal();
 
+
+    const mesa = userData.data.pedidosBean[0]?.mesa.numeroMesa;
+
 return (
     <ImageBackground
         source={require("../assets/fondo2.png")}
@@ -81,12 +98,13 @@ return (
   renderItem={({ item }) => (
     <View style={styles.container5}>
       <View style={styles.container6}>
-        <Text style={styles.item}>{item.nombre}</Text>
-        <Text style={styles.item}>Cantidad: {item.cantidad}</Text>
+        <Text style={styles.item}>{item.nombre}</Text><Text style={styles.item}>Precio Unitario: ${item.precio}</Text>
+      
       </View>
       <View style={styles.container6}>
-        <Text style={styles.item}>{item.menu.descripcion}</Text>
-        <Text style={styles.item}>Precio: ${item.precio}</Text>
+        <Text style={styles.item}>{item.menu.descripcion}</Text> 
+         <Text style={styles.item}>Cantidad: {item.cantidad}</Text>
+        
       </View>
     </View>
   )}
@@ -95,11 +113,12 @@ return (
                     </SafeAreaView>
                     <View style={styles.container5}>
                         <View style={styles.container6}>
-                            <Text style={styles.item}>Pedido Mesa: 1</Text>
+                           
+<Text style={styles.item}>Pedido Mesa: {mesa}</Text>
                             <Text style={styles.item}>Total: ${total}</Text>
                         </View>
                         <View style={styles.container6}>
-                            <Text style={styles.item}>A Nombre de: Miranda</Text>
+                        <Text style={styles.item}>A Nombre de: {userData.data.user}</Text>
                         </View>
                     </View>
                     <View style={styles.container3}>

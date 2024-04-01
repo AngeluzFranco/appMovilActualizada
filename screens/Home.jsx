@@ -14,6 +14,7 @@ import {
     SectionList,
     StatusBar,
 } from "react-native";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useNavigation } from '@react-navigation/native';
 import { Backend } from "../config/backendconfig";
@@ -281,9 +282,10 @@ export default function Home({ route }) {
                 <View style={styles.container2}>
                     <Tab.Navigator
                         screenOptions={{
-                            tabBarActiveTintColor: 'white',
-                            tabBarInactiveTintColor: 'white',
+                            tabBarActiveTintColor: 'black',
+                            tabBarInactiveTintColor: 'black',
                             tabBarStyle: { backgroundColor: 'transparent' },
+                            
                         }}
                     >
                        <Tab.Screen name="Mesas Disponibles" children={() => <MesasDisponibles userData={userData} />} />
@@ -297,14 +299,13 @@ export default function Home({ route }) {
 
 const styles = StyleSheet.create({
     backgroundImage: {
-        flex: 1,
-        resizeMode: "cover",
+        width: wp('100%'),
+        height: hp('100%'),
     },
-
     container: {
         flex: 1,
         justifyContent: "center",
-        padding: 20,
+        padding: wp('5%'),
         backgroundColor: "rgba(255,255,255,0.01)",
     },
 
@@ -317,16 +318,16 @@ const styles = StyleSheet.create({
     },
 
     logo: {
-        width: 60,
-        height: 60,
-        marginEnd: 50,
+        width: wp('16%'),
+        height: hp('10%'),
+        marginEnd: wp('5%'),
+        flex: 1,
     },
-
     titleMesas: {
-        color: "rgba(245, 133, 0, 1)",
-        fontSize: 50,
+        color: "black", 
+        fontSize: wp('10%'),
         fontWeight: "bold",
-        marginRight: "45%",
+        marginRight: wp('45%'),
     },
 
     formContainer: {
@@ -354,14 +355,14 @@ const styles = StyleSheet.create({
     },
 
     titleNumMesa: {
-        color: "rgba(255, 255, 255, 100)",
+        color: "black",
         fontSize: 25,
         fontWeight: "bold",
         marginBottom: 20,
     },
 
     titleNombreMesa: {
-        color: "rgba(255, 255, 255, 100)",
+        color: "black", 
         fontSize: 14,
         fontWeight: "bold",
         marginBottom: 10,

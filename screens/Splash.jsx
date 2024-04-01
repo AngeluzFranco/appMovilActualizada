@@ -1,20 +1,28 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation , useRoute} from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 
-
 const Splash = () => {
   const navigation = useNavigation();
+  const route = useRoute();
 
   useEffect(() => {
+    console.log('platillosSeleccionados:', route.params?.platillosSeleccionados);
+    console.log('userData:', route.params?.userData);
+    console.log('total:', route.params?.total);
+
     const timeoutId = setTimeout(() => {
-      navigation.replace('Pedido',  { userData: data });
+        navigation.replace('Pedido',  {
+            userData: route.params?.userData,
+            platillosSeleccionados: route.params?.platillosSeleccionados,
+            total: route.params?.total
+        });
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [navigation]);
+}, [navigation, route]);
 
   return (
     <View style={style.container}>
