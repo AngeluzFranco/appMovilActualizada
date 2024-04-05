@@ -283,7 +283,7 @@ export default function Home({ route }) {
                     <Tab.Navigator
                         screenOptions={{
                             tabBarActiveTintColor: 'black',
-                            tabBarInactiveTintColor: 'black',
+                            tabBarInactiveTintColor: 'white',
                             tabBarStyle: { backgroundColor: 'transparent' },
                             
                         }}
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
 
     container2: {
         marginTop: '-2%',
-        backgroundColor: "rgba(255, 255, 255, 0.1)",
+        backgroundColor: "rgba(245, 133, 0, 1)",
         borderRadius: 20,
         height: "90%",
         justifyContent: "top",
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     titleMesas: {
-        color: "black", 
+        color: "rgba(245, 133, 0, 1)", 
         fontSize: wp('10%'),
         fontWeight: "bold",
         marginRight: wp('45%'),
@@ -334,12 +334,12 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginBottom: 20,
         padding: 10,
-        backgroundColor: "rgba(255, 255, 255, 0.3)",
+        backgroundColor: "rgba(234, 255, 221, .5)",
         borderRadius: 20,
         height: "auto",
         justifyContent: "center",
-        borderWidth: 1,
-        borderColor: '#fff',
+        borderWidth: 2,
+        borderColor: 'rgba(255, 0, 0, 1)',
     },
 
     formContainer2: {
@@ -350,8 +350,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         height: "auto",
         justifyContent: "center",
-        borderWidth: 1,
-        borderColor: '#fff',
+        borderWidth: 2,
+        borderColor: 'rgba(255, 0, 0, 1)',
     },
 
     titleNumMesa: {
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
     button: {
         marginTop: 10,
         marginLeft: '53%',
-        backgroundColor: 'gray',
+        backgroundColor: 'rgba(245, 133, 0, 1)',
         padding: 10,
         borderRadius: 5,
         width: 40,
