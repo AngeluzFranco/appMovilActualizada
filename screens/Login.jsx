@@ -83,7 +83,7 @@ const Login = () => {
                     Inicie sesión para poder acceder a las funciones del sistema
                   </Text>
                   <View style={styles.inputContainer}>
-                    <Icon name="user" size={20} color="green" style={styles.icon} />
+                    <Icon name="user" size={20} color="white" style={styles.icon} />
                     <TextInput
                       placeholder="User"
                       placeholderTextColor={'white'}
@@ -93,7 +93,7 @@ const Login = () => {
                     />
                   </View>
                   <View style={styles.inputContainer}>
-                    <Icon name="lock" size={20} color="green" style={styles.icon} />
+                    <Icon name="lock" size={20} color="white" style={styles.icon} />
                     <TextInput
                       placeholder="Password"
                       placeholderTextColor={'white'}
