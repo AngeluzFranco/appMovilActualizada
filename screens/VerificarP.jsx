@@ -36,12 +36,14 @@ export default function VerificarP({ route, navigation }) {
         console.log('platillosSeleccionados:', platillosSeleccionados);
         console.log('userData:', userData);
         console.log('total:', total);
+        console.log('mesa:', mesa);
     
         if (navigation && typeof navigation.replace === 'function') {
             navigation.replace("Splash", {
                 platillosSeleccionados: platillosSeleccionados,
                 userData: userData,
-                total: total
+                total: total,
+                mesa: mesa
             });
         } else {
             console.error('navigation or navigation.replace is not defined');

@@ -12,12 +12,14 @@ const Splash = () => {
     console.log('platillosSeleccionados:', route.params?.platillosSeleccionados);
     console.log('userData:', route.params?.userData);
     console.log('total:', route.params?.total);
+    console.log('mesa:', route.params?.mesa);
 
     const timeoutId = setTimeout(() => {
         navigation.replace('Pedido',  {
             userData: route.params?.userData,
             platillosSeleccionados: route.params?.platillosSeleccionados,
-            total: route.params?.total
+            total: route.params?.total,
+            mesa: route.params?.mesa
         });
     }, 1000);
 

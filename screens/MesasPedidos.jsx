@@ -1,5 +1,7 @@
 import React, { useState , useEffect} from "react";
 import { useNavigation, useRoute } from '@react-navigation/native';
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import {
     View,
     Image,
@@ -16,15 +18,18 @@ import {
 import { Backend } from "../config/backendconfig";
 
 
-
-export default function Pedido({ navigation }) {
+export default function MesasPedidos({ navigation }) {
     const route = useRoute();
-    const platillosSeleccionados = route.params?.platillosSeleccionados;
-    const userData = route.params?.userData;
-    const total = route.params?.total;
-    const mesa = route.params?.mesa;
+    const data = route.params?.data;
+    const userData = route.params?.userData; 
+    const idMesa = route.params?.idMesa;
 
-    const {url} = Backend();
+
+    console.log('idMesa', JSON.stringify(idMesa, null, 2));
+
+
+
+    const { url } = Backend();
 
 
 
@@ -33,47 +38,25 @@ export default function Pedido({ navigation }) {
     };
 
 
+    const [pedidos, setPedidos] = useState([]);
 
-    const crearPedido = async () => {
-        if (userData && userData.idUsuario) {
-            const response = await fetch(`${url}/crearPedido`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    idUsuario: userData.idUsuario,
-                    estado: 'En proceso',
-                    idMesa: mesa.idMesa,
-                }),
+    useEffect(() => {
+        fetch(`${url}/pedidos/mesa/${idMesa}`)
+            .then((response) => response.json())
+            .then((data) => {
+                setPedidos(data);
+                console.log('Pedidos:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
             });
-    
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Pedido creado:', data);
-                // Aquí puedes verificar los datos de la respuesta
-                // Por ejemplo, si la respuesta incluye un id de pedido, puedes verificar que no sea null
-                if (data && data.idPedido) {
-                    console.log('El pedido se creó exitosamente');
-                } else {
-                    console.error('El pedido no se creó exitosamente');
-                }
-            } else {
-                console.error('Error al crear el pedido:', response.status);
-            }
-        } else {
-            console.error('userData o userData.idUsuario es null');
-        }
-    };
-   
-
+    }, []);
 
     return (
         <ImageBackground
             source={require("../assets/fondo2.png")}
             style={styles.backgroundImage}
         >
-            
             <View style={styles.container}>
                 <View style={{ flex: 1, flexDirection: "row", padding: 10 }}>
                     <Text style={styles.titleMesas}>Pedidos</Text>
@@ -85,25 +68,30 @@ export default function Pedido({ navigation }) {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.container2}>
-                    <View style={styles.formContainer2}>
-                        <View style={styles.container3}>
-                            <View style={styles.column}>
-                                <Text style={styles.titleNumMesa}>Pedido: 1</Text>
-                                <Text style={styles.titleNombreMesa}>Para la mesa: 1</Text>
-                                <Text style={styles.titleNombreMesa}>Estado: En preparacion</Text>
-                            </View>
-                            <View style={styles.column}>
-                                <Image
-                                    source={require("../assets/pedido.png")}
-                                    style={styles.mesa} />
-                            </View>
-                        </View>
-                    </View>
+    {pedidos.length > 0 && pedidos.map((pedido, index) => (
+        <View key={index} style={styles.formContainer2}>
+            <View style={styles.container3}>
+                <View style={styles.column}>
+                    <Text style={styles.titleNumMesa}>Pedido: {pedido.idPedido}</Text>
+                    <Text style={styles.titleNombreMesa}>Para la mesa: {pedido.mesa.idMesa}</Text>
+                    <Text style={styles.titleNombreMesa}>Estado: {pedido.estado}</Text>
                 </View>
+                <View style={styles.column}>
+                    <Image
+                        source={require("../assets/pedido.png")}
+                        style={styles.mesa} />
+                </View>
+            </View>
+        </View>
+    ))}
+</View>
             </View>
         </ImageBackground>
     );
 }
+    
+
+
 
 const styles = StyleSheet.create({
     backgroundImage: {
@@ -126,8 +114,10 @@ const styles = StyleSheet.create({
     },
 
     logo: {
-        width: 60,
-        height: 60,
+        width: wp('16%'),
+        height: hp('10%'),
+        marginEnd: wp('5%'),
+        flex: 1,
     },
 
     container3: {
@@ -148,10 +138,9 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginBottom: 10,
     },
-
     container2: {
         padding: 10,
-        marginTop: '-2%',
+        marginTop: '-2%', 
         backgroundColor: "rgba(255, 255, 255, 0.1)",
         borderRadius: 20,
         height: "90%",
@@ -160,11 +149,11 @@ const styles = StyleSheet.create({
 
     column: {
         flex: 1,
-        padding: 10,
+        padding: 5,
     },
 
     mesa: {
-        marginLeft: "35%",
+        marginLeft: "20%",
         width: 90,
         height: 70,
     },

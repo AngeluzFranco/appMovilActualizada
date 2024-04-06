@@ -75,7 +75,7 @@ export default function Menu() {
     const handleCategoriaPress = (categoria) => {
         const platillos = categorias[categoria].map(platillo => ({
             ...platillo,
-            cantidad: 0,
+            cantidad: platillosSeleccionados[categoria]?.find(p => p.id === platillo.id)?.cantidad || 0,
         }));
         setPlatillosSeleccionados(prevPlatillos => ({
             ...prevPlatillos,
@@ -83,6 +83,8 @@ export default function Menu() {
         }));
         setVerModal(true);
     };
+    
+    
 
 
     const cerrarModal = () => {
@@ -109,7 +111,7 @@ export default function Menu() {
     };
 
     const handleLogout = () => {
-        navigation.replace('Login');
+        navigation.replace('Home', { userData: userData });
     };
 
 
@@ -154,9 +156,9 @@ export default function Menu() {
                 <View style={styles.container2}>
                 <ScrollView>
                 <View style={styles.row}>
-                    {categorias && Object.keys(categorias).map((categoria, index) => (
-                        <View key={index} style={styles.card}>
-                            <TouchableOpacity onPress={() => handleCategoriaPress(categoria)}>
+    {categorias && Object.keys(categorias).map((categoria, index) => (
+        <View key={index} style={{...styles.card, flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <TouchableOpacity onPress={() => handleCategoriaPress(categoria)}>
                                 <Text style={styles.cardtext}>{categoria}</Text>
                             </TouchableOpacity>
                         </View>

@@ -13,6 +13,8 @@ import {
     SafeAreaView,
     SectionList,
     StatusBar,
+    ScrollView
+    
 } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -100,6 +102,7 @@ function MesasDisponibles({ userData }) {
                                 method: 'PUT',
                                 headers: {
                                     'Content-Type': 'application/json',
+                                     
                                 },
                                 body: JSON.stringify({
                                     ...item, 
@@ -132,39 +135,41 @@ function MesasDisponibles({ userData }) {
   
   
       return (
-  
-          <ImageBackground
-              source={require('../assets/fondo2.png')}
-              style={styles.backgroundImage} >
-              <SafeAreaView style={styles.container4}>
-              <SectionList
-    sections={data ? data.map((item, index) => ({ title: 'Mesa ' + (index + 1), data: [item] })) : []}
-    keyExtractor={(item, index) => item + index}
-    renderItem={({ item }) => (
-        <View style={styles.formContainer}>
-            <View style={styles.container3}>
-                <View style={styles.column}>
-                    <Text style={styles.titleNumMesa}>Mesa {item.numeroMesa}</Text>
-                    <Text style={styles.titleNombreMesa}>Estado: {item.estado}</Text>
-                    <Text style={styles.titleNombreMesa}>Número de sillas: {item.numeroSillas}</Text>
-                </View>
-                <View style={styles.column}>
-                    <Image
-                        source={require("../assets/mesa.png")}
-                        style={styles.mesa} />
-                  <TouchableHighlight
-    style={styles.button}
-    activeOpacity={0.6}
-    underlayColor="#DDDDDD" onPress={() => handleAbrirModal(item)}>
-    <Text></Text>
-</TouchableHighlight>
-                </View>
-            </View>
-        </View>
-    )}
-/>
-              </SafeAreaView>
-          </ImageBackground>
+        <ImageBackground
+        source={require('../assets/fondo2.png')}
+        style={{...styles.backgroundImage, flex: 1}} >
+        <SafeAreaView style={{...styles.container4, flex: 1}}>
+            <ScrollView>
+               
+            </ScrollView>
+            <SectionList
+                sections={data ? data.map((item, index) => ({ title: 'Mesa ' + (index + 1), data: [item] })) : []}
+                keyExtractor={(item, index) => item + index}
+                renderItem={({ item }) => (
+                    <View style={styles.formContainer}>
+                        <View style={styles.container3}>
+                            <View style={styles.column}>
+                                <Text style={styles.titleNumMesa}>Mesa {item.numeroMesa}</Text>
+                                <Text style={styles.titleNombreMesa}>Estado: {item.estado}</Text>
+                                <Text style={styles.titleNombreMesa}>Número de sillas: {item.numeroSillas}</Text>
+                            </View>
+                            <View style={styles.column}>
+                                <Image
+                                    source={require("../assets/mesa.png")}
+                                    style={styles.mesa} />
+                                <TouchableHighlight
+                                    style={styles.button}
+                                    activeOpacity={0.6}
+                                    underlayColor="#DDDDDD" onPress={() => handleAbrirModal(item)}>
+                                    <Text></Text>
+                                </TouchableHighlight>
+                            </View>
+                        </View>
+                    </View>
+                )}
+            />
+        </SafeAreaView>
+    </ImageBackground>
       );
   }
   
@@ -209,13 +214,14 @@ function MesasDisponibles({ userData }) {
     }, [userData.idUsuario]); 
 
     const IrMenu = () => navigation.navigate("Menu", { userData: userData });
-    const IrPedido = () => navigation.navigate("Pedido", { userData: userData });
+    const IrPedido = (idMesa) => {
+        navigation.navigate("MesasPedidos", { userData: userData, idMesa: idMesa });
+    };
     return (
         <ImageBackground
-            source={require("../assets/fondo2.png")}
-            style={styles.backgroundImage}
-        >
-            <SafeAreaView style={styles.container4}>
+        source={require('../assets/fondo2.png')}
+        style={{...styles.backgroundImage, flex: 1}} >
+        <SafeAreaView style={{...styles.container4, flex: 1}}>
                 <SectionList
                     sections={data ? data.map((item, index) => ({ title: 'Mesa ' + (index + 1), data: [item] })) : []}
                     keyExtractor={(item, index) => item + index}
@@ -228,7 +234,7 @@ function MesasDisponibles({ userData }) {
                                     <Text style={styles.titleNombreMesa}>Número de sillas: {item.numeroSillas}</Text>
                                 </View>
                                 <View style={styles.column}>
-                                    <TouchableOpacity onPress={IrPedido}>
+                                <TouchableOpacity onPress={() => IrPedido(item.idMesa)}>
                                         <Image
                                             source={require("../assets/mesa.png")}
                                             style={styles.mesa} />
@@ -283,7 +289,7 @@ export default function Home({ route }) {
                     <Tab.Navigator
                         screenOptions={{
                             tabBarActiveTintColor: 'black',
-                            tabBarInactiveTintColor: 'white',
+                            tabBarInactiveTintColor: 'black',
                             tabBarStyle: { backgroundColor: 'transparent' },
                             
                         }}
@@ -296,6 +302,7 @@ export default function Home({ route }) {
         </ImageBackground>
     );
 }
+
 
 const styles = StyleSheet.create({
     backgroundImage: {
@@ -340,6 +347,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderWidth: 2,
         borderColor: 'rgba(255, 0, 0, 1)',
+        width: "90%",
     },
 
     formContainer2: {
@@ -352,6 +360,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderWidth: 2,
         borderColor: 'rgba(255, 0, 0, 1)',
+        width: "90%",
     },
 
     titleNumMesa: {

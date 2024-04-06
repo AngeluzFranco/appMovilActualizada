@@ -25,30 +25,34 @@ const Login = () => {
   
 
     const checkUser = async () => {
-        try {
-            const payload = {user: user, password: password };
-            console.log(payload);
-            const response = await fetch(url + "/usuario/login",{
-                method: 'POST',
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(payload),
+      try {
+          const payload = {user: user, password: password };
+          console.log(payload);
+          const response = await fetch(url + "/usuario/login",{
+              method: 'POST',
+              headers: {"Content-Type": "application/json"},
+              body: JSON.stringify(payload),
   
-            })
-            console.log('Response:', response); 
-            if(response.ok && response.status === 200){
-              const data = await response.json();
-              console.log(data);
+          })
+          console.log('Response:', response); 
+          if(response.ok && response.status === 200){
+            const data = await response.json();
+            console.log(data);
+            if(data.data.rol === 'Mesero') {
               Alert.alert(`Bienvenido!`,undefined,[
                   {
                       text: 'Gracias', onPress: () => navigation.replace('Home', { userData: data })
                   }
               ])
-          }
-        } catch (error) {
-            console.error('Error:', error);
-            Alert.alert('Error', 'Hubo un problema al intentar iniciar sesión. Por favor, inténtalo de nuevo.');
+            } else {
+              Alert.alert('Error', 'No tienes permisos para iniciar sesión.');
+            }
         }
-    }
+      } catch (error) {
+          console.error('Error:', error);
+          Alert.alert('Error', 'Hubo un problema al intentar iniciar sesión. Por favor, inténtalo de nuevo.');
+      }
+  }
 
     return (
 
@@ -83,7 +87,7 @@ const Login = () => {
                     Inicie sesión para poder acceder a las funciones del sistema
                   </Text>
                   <View style={styles.inputContainer}>
-                    <Icon name="user" size={20} color="white" style={styles.icon} />
+                    <Icon name="user" size={20} color="green" style={styles.icon} />
                     <TextInput
                       placeholder="User"
                       placeholderTextColor={'white'}
@@ -93,7 +97,7 @@ const Login = () => {
                     />
                   </View>
                   <View style={styles.inputContainer}>
-                    <Icon name="lock" size={20} color="white" style={styles.icon} />
+                    <Icon name="lock" size={20} color="green" style={styles.icon} />
                     <TextInput
                       placeholder="Password"
                       placeholderTextColor={'white'}
