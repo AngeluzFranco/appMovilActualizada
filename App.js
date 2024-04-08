@@ -9,6 +9,7 @@ import Menu from "./screens/Menu";
 import Pedido from './screens/Pedido';
 import Splash from './screens/Splash';
 import VerificarP from './screens/VerificarP';
+import MesasPedidos from './screens/MesasPedidos';
  
 export default function App() { 
 
@@ -56,6 +57,7 @@ export default function App() {
           headerShown: false
         }}
         />
+        <Stack.Screen name="MesasPedidos" component={MesasPedidos}/>
       </Stack.Navigator>
     ); 
   } 

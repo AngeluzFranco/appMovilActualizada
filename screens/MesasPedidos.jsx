@@ -13,7 +13,8 @@ import {
     ImageBackground,
     Text,
     TouchableOpacity,
-    TouchableHighlight
+    TouchableHighlight,
+    Pressable
 } from "react-native";
 import { Backend } from "../config/backendconfig";
 
@@ -24,7 +25,8 @@ export default function MesasPedidos({ navigation }) {
     const userData = route.params?.userData; 
     const idMesa = route.params?.idMesa;
 
-
+    const [modalVisible, setModalVisible] = useState(false);
+const [selectedPedido, setSelectedPedido] = useState(null);
     console.log('idMesa', JSON.stringify(idMesa, null, 2));
 
 
@@ -68,22 +70,58 @@ export default function MesasPedidos({ navigation }) {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.container2}>
-    {pedidos.length > 0 && pedidos.map((pedido, index) => (
-        <View key={index} style={styles.formContainer2}>
-            <View style={styles.container3}>
-                <View style={styles.column}>
-                    <Text style={styles.titleNumMesa}>Pedido: {pedido.idPedido}</Text>
-                    <Text style={styles.titleNombreMesa}>Para la mesa: {pedido.mesa.idMesa}</Text>
-                    <Text style={styles.titleNombreMesa}>Estado: {pedido.estado}</Text>
-                </View>
-                <View style={styles.column}>
-                    <Image
-                        source={require("../assets/pedido.png")}
-                        style={styles.mesa} />
-                </View>
-            </View>
-        </View>
+                {pedidos.length > 0 && pedidos.map((pedido, index) => (
+  <View key={index} style={styles.formContainer2}>
+    <View style={styles.container3}>
+      <View style={styles.column}>
+        <Text style={styles.titleNumMesa}>Pedido: {pedido.idPedido}</Text>
+        <Text style={styles.titleNombreMesa}>Para la mesa: {pedido.mesa.idMesa}</Text>
+        <Text style={styles.titleNombreMesa}>Estado: {pedido.estado}</Text>
+      </View>
+      <View style={styles.column}>
+        <Image
+          source={require("../assets/pedido.png")}
+          style={styles.mesa} />
+        <TouchableHighlight
+          style={styles.button}
+          activeOpacity={0.6}
+          underlayColor="#DDDDDD"
+          onPress={() => {
+            setSelectedPedido(pedido);
+            setModalVisible(true);
+          }}>
+          <Text></Text>
+        </TouchableHighlight>
+      </View>
+    </View>
+  </View>
     ))}
+    <Modal
+  animationType="slide"
+  transparent={true}
+  visible={modalVisible}
+  onRequestClose={() => {
+    Alert.alert("Modal cerrado.");
+    setModalVisible(!modalVisible);
+  }}
+>
+<View style={styles.centeredView}>
+    <View style={styles.modalView}>
+      <Text style={styles.modalText}>Pedido: {selectedPedido?.idPedido}</Text>
+      <Text style={styles.modalText}>Para la mesa: {selectedPedido?.mesa.idMesa}</Text>
+      <Text style={styles.modalText}>Estado: {selectedPedido?.estado}</Text>
+      {selectedPedido?.detallesPedidoBean.map((detalle, index) => (
+        <Text key={index} style={styles.modalText}>Platillo: {detalle.platillo.nombre}</Text>
+      ))}
+      <Pressable
+        style={[styles.button, styles.buttonClose]}
+        onPress={() => setModalVisible(!modalVisible)}
+      >
+        <Text style={styles.textStyle}>Cerrar</Text>
+      </Pressable>
+    </View>
+  </View>
+</Modal>
 </View>
             </View>
         </ImageBackground>
@@ -169,5 +207,54 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'rgba(245, 133, 0, 1)',
     },
+    button: {
+        marginTop: 10,
+        marginLeft: '32%',
+        backgroundColor: 'rgba(245, 133, 0, 1)',
+        padding: 10,
+        borderRadius: 5,
+        width: 40,
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+      },
+      modalView: {
+       
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        width: 'auto',
+        height: 'auto',
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+      },
+      buttonClose: {
+        backgroundColor: "#2196F3",
+        width: 100,
+        height: 40,
+        marginTop: 15,
+        borderRadius: 10,
+
+      
+      },
+      textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+      },
+      modalText: {
+        marginBottom: 15,
+        textAlign: "center"
+      }
 
 });
