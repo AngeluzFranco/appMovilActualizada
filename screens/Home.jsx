@@ -27,7 +27,7 @@ function MesasDisponibles({ userData }) {
     const {url} = Backend();
     const navigation = useNavigation();
     const [data, setData] = useState(null);
-    console.log('userData en Mesas Disponibles:', userData); 
+    // console.log('userData en Mesas Disponibles:', userData); 
   
 
 
@@ -96,7 +96,7 @@ function MesasDisponibles({ userData }) {
                             return response.json();
                         })
                         .then(data => {
-                            console.log('Respuesta de /pedidos/:', data);
+                            // console.log('Respuesta de /pedidos/:', data);
                             
                             return fetch(url + '/mesas/' + item.numeroMesa, {
                                 method: 'PUT',
@@ -179,7 +179,7 @@ function MesasDisponibles({ userData }) {
     const { url } = Backend();
     const navigation = useNavigation();
     const [data, setData] = useState(null);
-    console.log('userData en Mis Mesas:', userData); 
+    // console.log('userData en Mis Mesas:', userData); 
    
 
 
@@ -197,7 +197,7 @@ function MesasDisponibles({ userData }) {
                 return response.json();
             })
                 .then(data => {
-                    console.log("Respuesta de mis mesas"+ JSON.stringify(data));
+                    // console.log("Respuesta de mis mesas"+ JSON.stringify(data));
                     setData(data);
                 }) 
                 .catch(error => {
@@ -289,7 +289,7 @@ export default function Home({ route }) {
                     <Tab.Navigator
                         screenOptions={{
                             tabBarActiveTintColor: 'black',
-                            tabBarInactiveTintColor: 'white',
+                            tabBarInactiveTintColor: 'black',
                             tabBarStyle: { backgroundColor: 'transparent' },
                             
                         }}

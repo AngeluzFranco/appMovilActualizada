@@ -20,7 +20,7 @@ export default function VerificarP({ route, navigation }) {
     const { platillosSeleccionados, userData } = route.params;
 
     console.log('platillosSeleccionados:', JSON.stringify(platillosSeleccionados, null, 2));
-    console.log("userData VPedido"+JSON.stringify(userData));
+    console.log("userData VPedido" + JSON.stringify(userData));
 
 
     const handleLogout = () => {
@@ -31,29 +31,35 @@ export default function VerificarP({ route, navigation }) {
         navigation.navigate("Menu", { userData: userData, platillosSeleccionados: platillosSeleccionados });
     }
 
-    
+
     const confirmarP = () => {
-        console.log('platillosSeleccionados:', platillosSeleccionados);
-        console.log('userData:', userData);
-        console.log('total:', total);
-        console.log('mesa:', mesa);
-    
+
+        console.log('ConfirmarP :');
+        console.log({
+            platillosSeleccionados: platillosSeleccionados,
+            userData: userData,
+            total: total,
+            mesa: mesa,
+            idPedido: idPedido
+        });
+        
         if (navigation && typeof navigation.replace === 'function') {
             navigation.replace("Splash", {
                 platillosSeleccionados: platillosSeleccionados,
                 userData: userData,
                 total: total,
-                mesa: mesa
+                mesa: mesa,
+                idPedido: idPedido
             });
-        } else {
+        }else {
             console.error('navigation or navigation.replace is not defined');
         }
     }
- 
+
     const filteredData = platillosSeleccionados ? platillosSeleccionados.map(section => {
         const data = Object.keys(section)
-            .filter(key => key !== 'data' && section[key].cantidad > 0)
-            .map(key => section[key]);
+        .filter(key => key !== 'data' && section[key].cantidad > 0)
+        .map(key => ({...section[key], idPlatillo: key}));
         return {
             ...section,
             data: data
@@ -71,56 +77,58 @@ export default function VerificarP({ route, navigation }) {
         });
         return total;
     }
-    
+
     const total = calcularTotal();
 
+    const idPedido = userData?.data?.pedidosBean?.[0]?.idPedido;
+    const mesa = userData?.data?.pedidosBean?.[0]?.mesa?.numeroMesa;
 
-    const mesa = userData.data.pedidosBean[0]?.mesa.numeroMesa;
 
-return (
-    <ImageBackground
-        source={require("../assets/fondo2.png")}
-        style={styles.backgroundImage}
-    >
-        <View style={styles.container}>
-            <View style={{ flex: 1, flexDirection: "row", padding: 10 }}>
-                <Text style={styles.titleMesas}>Pedidos</Text>
-                <TouchableOpacity onPress={handleLogout}>
-                    <Image
-                        source={require("../assets/gastromanager3.png")}
-                        style={styles.logo}
-                    />
+    console.log('idPedido:', idPedido);
+    return (
+        <ImageBackground
+            source={require("../assets/fondo2.png")}
+            style={styles.backgroundImage}
+        >
+            <View style={styles.container}>
+                <View style={{ flex: 1, flexDirection: "row", padding: 10 }}>
+                    <Text style={styles.titleMesas}>Pedidos</Text>
+                    <TouchableOpacity onPress={handleLogout}>
+                        <Image
+                            source={require("../assets/gastromanager3.png")}
+                            style={styles.logo}
+                        />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.container2}>
                     <SafeAreaView style={styles.container4}>
-                    <SectionList
-  sections={filteredData}
-  keyExtractor={(item, index) => item + index}
-  renderItem={({ item }) => (
-    <View style={styles.container5}>
-      <View style={styles.container6}>
-        <Text style={styles.item}>{item.nombre}</Text><Text style={styles.item}>Precio Unitario: ${item.precio}</Text>
-      
-      </View>
-      <View style={styles.container6}>
-        <Text style={styles.item}>{item.menu.descripcion}</Text> 
-         <Text style={styles.item}>Cantidad: {item.cantidad}</Text>
-        
-      </View>
-    </View>
-  )}
-/>
+                        <SectionList
+                            sections={filteredData}
+                            keyExtractor={(item, index) => item + index}
+                            renderItem={({ item }) => (
+                                <View style={styles.container5}>
+                                    <View style={styles.container6}>
+                                        <Text style={styles.item}>{item.nombre}</Text><Text style={styles.item}>Precio Unitario: ${item.precio}</Text>
+
+                                    </View>
+                                    <View style={styles.container6}>
+                                        <Text style={styles.item}>{item.menu.descripcion}</Text>
+                                        <Text style={styles.item}>Cantidad: {item.cantidad}</Text>
+
+                                    </View>
+                                </View>
+                            )}
+                        />
 
                     </SafeAreaView>
                     <View style={styles.container5}>
                         <View style={styles.container6}>
-                           
-<Text style={styles.item}>Pedido Mesa: {mesa}</Text>
+
+                            <Text style={styles.item}>Pedido Mesa: {mesa}</Text>
                             <Text style={styles.item}>Total: ${total}</Text>
                         </View>
                         <View style={styles.container6}>
-                        <Text style={styles.item}>A Nombre de: {userData.data.user}</Text>
+                            <Text style={styles.item}>A Nombre de: {userData.data.user}</Text>
                         </View>
                     </View>
                     <View style={styles.container3}>

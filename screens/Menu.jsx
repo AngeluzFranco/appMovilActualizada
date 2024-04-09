@@ -27,8 +27,6 @@ export default function Menu() {
     const userData = route.params.userData;
     const { url } = Backend();
 
-    // console.log("Menu"+userData);
-
 
 
 
@@ -132,8 +130,8 @@ export default function Menu() {
         }, {});
     
 
-        console.log('platillosConCantidad:', JSON.stringify(platillosConCantidad, null, 2));
-        console.log('cantidades:', JSON.stringify(cantidades, null, 2));
+        // console.log('platillosConCantidad:', JSON.stringify(platillosConCantidad, null, 2));
+        // console.log('cantidades:', JSON.stringify(cantidades, null, 2));
     navigation.navigate('VerificarP', { userData: userData, platillosSeleccionados: platillosConCantidad, cantidades: cantidades });
 }
     
@@ -196,8 +194,8 @@ export default function Menu() {
                                     platillos.filter(platillo => platillo.cantidad > 0)
                                 ).filter(platillos => platillos.length > 0);
                                 
-                                console.log('platillosConCantidad:', JSON.stringify(platillosConCantidad, null, 2));
-                                console.log('cantidades:', JSON.stringify(cantidades, null, 2));
+                                // console.log('platillosConCantidad:', JSON.stringify(platillosConCantidad, null, 2));
+                                // console.log('cantidades:', JSON.stringify(cantidades, null, 2));
                                 navigation.navigate('VerificarP', { userData: userData, platillosSeleccionados: platillosConCantidad, cantidades: cantidades });   }}
                         >
                             <Text style={styles.buttonText}>Verificar</Text>

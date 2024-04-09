@@ -1,4 +1,6 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
+import { BlurView } from 'expo-blur';
+
 import { useNavigation, useRoute } from '@react-navigation/native';
 import {
     View,
@@ -8,6 +10,7 @@ import {
     Modal,
     Alert,
     TextInput,
+    ScrollView,
     ImageBackground,
     Text,
     TouchableOpacity,
@@ -15,57 +18,74 @@ import {
 } from "react-native";
 import { Backend } from "../config/backendconfig";
 
-
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function Pedido({ navigation }) {
+
+    console.log('Pedido');
+
+    const { url } = Backend();
+
+
     const route = useRoute();
-    const platillosSeleccionados = route.params?.platillosSeleccionados;
     const userData = route.params?.userData;
+    const platillosSeleccionados = route.params?.platillosSeleccionados;
     const total = route.params?.total;
     const mesa = route.params?.mesa;
 
-    const {url} = Backend();
+    console.log('userData:', userData);
+    console.log('platillosSeleccionados:', platillosSeleccionados);
+    console.log('total:', total);
+    console.log('mesa:', mesa);
 
 
+    const [pedido, setPedido] = useState(null);
 
     const handleLogout = () => {
         navigation.navigate("Home", { userData: userData });
     };
 
+    const [modalVisible, setModalVisible] = useState(false);
 
+    const handleOpenModal = () => {
+        setModalVisible(true);
+    };
 
-    const crearPedido = async () => {
-        if (userData && userData.idUsuario) {
-            const response = await fetch(`${url}/crearPedido`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    idUsuario: userData.idUsuario,
-                    estado: 'En proceso',
-                    idMesa: mesa.idMesa,
-                }),
-            });
-    
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Pedido creado:', data);
-                // Aquí puedes verificar los datos de la respuesta
-                // Por ejemplo, si la respuesta incluye un id de pedido, puedes verificar que no sea null
-                if (data && data.idPedido) {
-                    console.log('El pedido se creó exitosamente');
-                } else {
-                    console.error('El pedido no se creó exitosamente');
-                }
-            } else {
-                console.error('Error al crear el pedido:', response.status);
+    const handleCloseModal = () => {
+        setModalVisible(false);
+    };
+
+    const [detailsVisible, setDetailsVisible] = useState(false);
+
+    const obtenerPedidos = async () => {
+        try {
+            const response = await fetch(url + '/pedidos/');
+
+            if (!response.ok) {
+                throw new Error('Error al obtener los pedidos: ' + response.status);
             }
-        } else {
-            console.error('userData o userData.idUsuario es null');
+
+            const data = await response.json();
+            console.log('Recibido los siguientes datos de la respuesta:', data);
+
+            const pedidoUsuarioMesa = data.data.find(pedido =>
+                pedido.usuario.idUsuario === userData.data.idUsuario &&
+                pedido.mesa.idMesa === mesa
+            );
+
+            console.log('Pedido para el usuario y mesa especificados:', pedidoUsuarioMesa);
+
+            setPedido(pedidoUsuarioMesa);
+
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Hubo un error al obtener los pedidos. Por favor, intenta de nuevo más tarde.');
         }
     };
-   
+
+    useEffect(() => {
+        obtenerPedidos();
+    }, []);
 
 
     return (
@@ -73,7 +93,6 @@ export default function Pedido({ navigation }) {
             source={require("../assets/fondo2.png")}
             style={styles.backgroundImage}
         >
-            
             <View style={styles.container}>
                 <View style={{ flex: 1, flexDirection: "row", padding: 10 }}>
                     <Text style={styles.titleMesas}>Pedidos</Text>
@@ -88,18 +107,84 @@ export default function Pedido({ navigation }) {
                     <View style={styles.formContainer2}>
                         <View style={styles.container3}>
                             <View style={styles.column}>
-                                <Text style={styles.titleNumMesa}>Pedido: 1</Text>
-                                <Text style={styles.titleNombreMesa}>Para la mesa: 1</Text>
-                                <Text style={styles.titleNombreMesa}>Estado: En preparacion</Text>
+                                <Text style={styles.titleNumMesa}>Pedido: {pedido?.idPedido}</Text>
+                                <Text style={styles.titleNombreMesa}>Para la mesa: {pedido?.mesa?.numeroMesa}</Text>
+                                <Text style={styles.titleNombreMesa}>Estado: {pedido?.estado}</Text>
                             </View>
                             <View style={styles.column}>
-                                <Image
-                                    source={require("../assets/pedido.png")}
-                                    style={styles.mesa} />
+                                <View style={{ alignItems: 'center' }}>
+                                    <Image
+                                        source={require("../assets/pedido.png")}
+                                        style={styles.mesa} />
+
+
+                                    <View style={{ alignItems: 'center' }}>
+                                        <TouchableOpacity
+                                            style={{
+                                                backgroundColor: 'rgba(105,105,105,0.5)',
+                                                padding: 4,
+                                                marginStart: 35,
+                                                borderRadius: 5,
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                marginTop: 10,
+                                                width: 50,
+                                            }}
+                                            onPress={handleOpenModal}
+                                        >
+                                            <Icon name="ellipsis-vertical" size={24} color="white" />
+                                        </TouchableOpacity>
+
+
+                                    </View>
+
+                                </View>
+                                <Text style={{ color: 'white' }}>Ver detalles del pedido</Text>
                             </View>
                         </View>
                     </View>
                 </View>
+
+
+
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={handleCloseModal}
+                >
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{ backgroundColor: 'white', width: '80%', borderColor: 'black', borderWidth: 1, borderRadius: 10, padding: 20 }}>
+                            <TouchableHighlight
+                                style={{ position: 'absolute', top: 10, right: 10 }}
+                                onPress={handleCloseModal}
+                            >
+                                <Text style={{ fontSize: 24 }}>X</Text>
+                            </TouchableHighlight>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', margin: 10 }}>Detalles del pedido:</Text>
+                            <ScrollView style={{ borderWidth: 1, borderColor: '#000', margin: 10, width: '90%' }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10, borderBottomWidth: 1, borderColor: '#000' }}>
+                                    <Text style={{ flex: 1, textAlign: 'center' }}>Nombre</Text>
+                                    <Text style={{ flex: 1, textAlign: 'center' }}>Cantidad</Text>
+                                    <Text style={{ flex: 1, textAlign: 'center' }}>Total</Text>
+                                </View>
+                                {platillosSeleccionados.flat().map((dish, index) => (
+                                    <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
+                                        <Text style={{ flex: 2, textAlign: 'center' }}>{dish.nombre}</Text>
+                                        <Text style={{ flex: 1, textAlign: 'center' }}>{dish.cantidad}</Text>
+                                        <Text style={{ flex: 1, textAlign: 'center' }}>{dish.cantidad * dish.precio}</Text>
+                                    </View>
+                                ))}
+                                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 10, borderTopWidth: 1, borderColor: '#000' }}>
+                                    <Text>Total a pagar: {total}</Text>
+                                </View>
+                            </ScrollView>
+                        </View>
+                    </View>
+                </Modal>
+
+
+
             </View>
         </ImageBackground>
     );

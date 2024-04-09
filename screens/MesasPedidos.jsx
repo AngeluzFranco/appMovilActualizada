@@ -110,9 +110,45 @@ const [selectedPedido, setSelectedPedido] = useState(null);
       <Text style={styles.modalText}>Pedido: {selectedPedido?.idPedido}</Text>
       <Text style={styles.modalText}>Para la mesa: {selectedPedido?.mesa.idMesa}</Text>
       <Text style={styles.modalText}>Estado: {selectedPedido?.estado}</Text>
-      {selectedPedido?.detallesPedidoBean.map((detalle, index) => (
-        <Text key={index} style={styles.modalText}>Platillo: {detalle.platillo.nombre}</Text>
-      ))}
+  
+
+
+
+      <View style={styles.headerRow}>
+  <View style={styles.cell}>
+    <Text style={styles.headerText}>Platillo</Text>
+  </View>
+  <View style={styles.cell}>
+    <Text style={styles.headerText}>Precio</Text>
+  </View>
+  <View style={styles.cell}>
+    <Text style={styles.headerText}>Cantidad</Text>
+  </View>
+  <View style={styles.cell}>
+    <Text style={styles.headerText}>Total</Text>
+  </View>
+</View>
+
+{selectedPedido?.detallesPedidoBean.map((detalle, index) => (
+  <View key={index} style={styles.row}>
+    <View style={styles.cell}>
+      <Text style={styles.cellText}>{detalle.platillo.nombre}</Text>
+    </View>
+    <View style={styles.cell}>
+      <Text style={styles.cellText}>{detalle.platillo.precio}</Text>
+    </View>
+    <View style={styles.cell}>
+      <Text style={styles.cellText}>{detalle.cantidad}</Text>
+    </View>
+    <View style={styles.cell}>
+      <Text style={styles.cellText}>{(detalle.platillo.precio)*(detalle.cantidad)}</Text>
+    </View>
+  </View>
+))}
+
+
+
+
       <Pressable
         style={[styles.button, styles.buttonClose]}
         onPress={() => setModalVisible(!modalVisible)}
@@ -132,6 +168,39 @@ const [selectedPedido, setSelectedPedido] = useState(null);
 
 
 const styles = StyleSheet.create({
+    
+    headerRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+      },
+      
+      headerText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+      },
+      
+      row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+      },
+      
+      cell: {
+        flex: 1,
+      },
+      
+      cellText: {
+        fontSize: 14,
+        textAlign: 'center',
+      },
+    
+    
     backgroundImage: {
         flex: 1,
         resizeMode: "cover",
@@ -148,27 +217,42 @@ const styles = StyleSheet.create({
         color: "rgba(245, 133, 0, 1)",
         fontSize: 50,
         fontWeight: "bold",
-        marginRight: "35%",
-    },
+        textAlign: 'center',
+        flex: 1,
+      },
 
     logo: {
         width: wp('16%'),
         height: hp('10%'),
-        marginEnd: wp('5%'),
-        flex: 1,
-    },
+        alignSelf: 'center',
+      },
 
     container3: {
         flexDirection: "row",
         justifyContent: "space-between",
     },
-
-    titleNumMesa: {
-        color: "rgba(0, 0, 0, 1)",
-        fontSize: 25,
-        fontWeight: "bold",
-        marginBottom: 20,
-    },
+   
+  titleNumMesa: {
+  fontSize: 20,
+  fontWeight: 'bold',
+  color: 'rgba(245, 133, 0, 1)',
+},
+    
+    platilloContainer: {
+        marginBottom: 10,
+        padding: 10,
+        backgroundColor: 'rgba(248, 233, 215, 0.1)',
+        borderRadius: 10,
+      },
+      
+      platilloNombre: {
+        fontSize: 18,
+        fontWeight: 'bold',
+      },
+      
+      platilloDetalle: {
+        fontSize: 14,
+      },
 
     titleNombreMesa: {
         color: "rgba(0, 0, 0, 1)",
