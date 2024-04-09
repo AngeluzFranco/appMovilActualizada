@@ -28,17 +28,23 @@ const Login = () => {
       try {
           const payload = {user: user, password: password };
           console.log(payload);
-          const response = await fetch(url + "/usuario/login",{
+          const response = await fetch( "http://192.168.1.70:8080/api/auth/signin",{
               method: 'POST',
               headers: {"Content-Type": "application/json"},
+              
+              
               body: JSON.stringify(payload),
   
           })
+
+
+
+
           console.log('Response:', response); 
           if(response.ok && response.status === 200){
             const data = await response.json();
             console.log(data);
-            if(data.data.rol === 'Mesero') {
+            if(data.data.roles.role === 'WAITER_ROLE') {
               Alert.alert(`Bienvenido!`,undefined,[
                   {
                       text: 'Gracias', onPress: () => navigation.replace('Home', { userData: data })
@@ -47,7 +53,7 @@ const Login = () => {
             } else {
               Alert.alert('Error', 'No tienes permisos para iniciar sesión.');
             }
-        }
+          }
       } catch (error) {
           console.error('Error:', error);
           Alert.alert('Error', 'Hubo un problema al intentar iniciar sesión. Por favor, inténtalo de nuevo.');

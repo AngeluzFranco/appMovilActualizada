@@ -43,7 +43,11 @@ const [selectedPedido, setSelectedPedido] = useState(null);
     const [pedidos, setPedidos] = useState([]);
 
     useEffect(() => {
-        fetch(`${url}/pedidos/mesa/${idMesa}`)
+      fetch(`${url}/pedidos/mesa/${idMesa}`, {
+        headers: {
+          'Authorization': 'Bearer ' + userData.data.token,
+        },
+      })
             .then((response) => response.json())
             .then((data) => {
                 setPedidos(data);
@@ -129,22 +133,26 @@ const [selectedPedido, setSelectedPedido] = useState(null);
   </View>
 </View>
 
-{selectedPedido?.detallesPedidoBean.map((detalle, index) => (
-  <View key={index} style={styles.row}>
-    <View style={styles.cell}>
-      <Text style={styles.cellText}>{detalle.platillo.nombre}</Text>
+{selectedPedido?.detallesPedidoBean.length > 0 ? (
+  selectedPedido?.detallesPedidoBean.map((detalle, index) => (
+    <View key={index} style={styles.row}>
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{detalle.platillo.nombre}</Text>
+      </View>
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{detalle.platillo.precio}</Text>
+      </View>
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{detalle.cantidad}</Text>
+      </View>
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{(detalle.platillo.precio)*(detalle.cantidad)}</Text>
+      </View>
     </View>
-    <View style={styles.cell}>
-      <Text style={styles.cellText}>{detalle.platillo.precio}</Text>
-    </View>
-    <View style={styles.cell}>
-      <Text style={styles.cellText}>{detalle.cantidad}</Text>
-    </View>
-    <View style={styles.cell}>
-      <Text style={styles.cellText}>{(detalle.platillo.precio)*(detalle.cantidad)}</Text>
-    </View>
-  </View>
-))}
+  ))
+) : (
+  <Text>No se ha ordenado ningún platillo.</Text>
+)}
 
 
 

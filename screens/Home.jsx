@@ -27,15 +27,20 @@ function MesasDisponibles({ userData }) {
     const {url} = Backend();
     const navigation = useNavigation();
     const [data, setData] = useState(null);
-    // console.log('userData en Mesas Disponibles:', userData); 
+    console.log('userData en Mesas Disponibles:',userData.data.token); 
   
 
 
+    
 
   
     useEffect(() => {
       const fetchMesas = () => {
-          fetch(url + '/mesas/active/')
+        fetch(url + '/mesas/active/', {
+            headers: {
+              'Authorization': 'Bearer ' + userData.data.token,
+            },
+          })
               .then(response => {
                   if (!response.ok) {
                       throw new Error('Hubo un error en la petición');
@@ -78,11 +83,12 @@ function MesasDisponibles({ userData }) {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + userData.data.token,
                         },
                         body: JSON.stringify({
                             estado: 'En proceso',
                             usuario: {
-                                idUsuario: userData.data.idUsuario,
+                                idUsuario: userData.data.user.idUsuario,
                             },
                             mesa: {
                                 idMesa: item.numeroMesa,
@@ -102,6 +108,7 @@ function MesasDisponibles({ userData }) {
                                 method: 'PUT',
                                 headers: {
                                     'Content-Type': 'application/json',
+                                    'Authorization': 'Bearer ' + userData.data.token
                                      
                                 },
                                 body: JSON.stringify({
@@ -179,8 +186,11 @@ function MesasDisponibles({ userData }) {
     const { url } = Backend();
     const navigation = useNavigation();
     const [data, setData] = useState(null);
-    // console.log('userData en Mis Mesas:', userData); 
-   
+    // console.log('userData en Mis Mesas 1:', userData); 
+    //  console.log('userData en Mis Mesas 2:', userData.data.token); 
+    //  console.log('userData en Mis Mesas 3:',userData.data.idUsuario); 
+
+
 
 
 
@@ -188,7 +198,11 @@ function MesasDisponibles({ userData }) {
 
     useEffect(() => {
         const fetchMesas = () => {
-            fetch(url + '/mesas/usuario/' + userData.data.idUsuario)
+            fetch(url + '/mesas/usuario/' + userData.data.user.idUsuario, {
+                headers: {
+                  'Authorization': 'Bearer ' + userData.data.token
+                },
+            })
             .then(response => {
                 if (!response.ok) {
                     console.log('Status code:', response.status);

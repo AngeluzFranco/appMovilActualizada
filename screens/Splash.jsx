@@ -12,6 +12,7 @@ const Splash = () => {
   useEffect(() => {
     const platillosSeleccionados = route.params?.platillosSeleccionados.flat();       
     console.log('idPedido:', route.params?.idPedido);
+   
     const postPedido = (platillo) => {
       const detallesPedidoBean = {
           platillo: {
@@ -23,16 +24,18 @@ const Splash = () => {
           },
           precio_total: platillo.precio * platillo.cantidad
       };
-  
-        console.log('Datos antes de la petición:', detallesPedidoBean);
     
-        fetch(url + '/detallepedido/', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(detallesPedidoBean)
+      console.log('Datos antes de la petición:', detallesPedidoBean);
+    
+      fetch(url + '/detallepedido/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + route.params?.userData.data.token,
+        },
+        body: JSON.stringify(detallesPedidoBean)
       })
+
       .then(response => {
           if (!response.ok) {
               console.error('Error status:', response.status);

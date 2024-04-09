@@ -43,7 +43,11 @@ export default function Menu() {
     useEffect(() => {
         const fetchCategorias = async () => {
             try {
-                const response = await fetch(url + '/platillo/');
+                const response = await fetch(url + '/platillo/', {
+                    headers: {
+                      'Authorization': 'Bearer ' + userData.data.token,
+                    },
+                  });
                 if (!response.ok) {
                     throw new Error('Hubo un error en la petición');
                 }
