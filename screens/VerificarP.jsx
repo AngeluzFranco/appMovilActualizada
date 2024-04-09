@@ -20,7 +20,7 @@ export default function VerificarP({ route, navigation }) {
     const { platillosSeleccionados, userData } = route.params;
 
     console.log('platillosSeleccionados:', JSON.stringify(platillosSeleccionados, null, 2));
-    console.log("userData VPedido" + JSON.stringify(userData));
+    
 
 
     const handleLogout = () => {
@@ -80,8 +80,14 @@ export default function VerificarP({ route, navigation }) {
 
     const total = calcularTotal();
 
-    const idPedido = userData?.data?.pedidosBean?.[0]?.idPedido;
-    const mesa = userData?.data?.pedidosBean?.[0]?.mesa?.numeroMesa;
+    const idPedido = userData?.data?.user.pedidosBean?.[0]?.idPedido;
+    const mesa = userData?.data?.user.pedidosBean?.[0]?.mesa?.numeroMesa;
+
+console.log('12312312312:', userData.data.user.pedidosBean);
+
+
+
+console.log('usedata' + JSON.stringify(userData));
 
 
     console.log('idPedido:', idPedido);
@@ -128,7 +134,7 @@ export default function VerificarP({ route, navigation }) {
                             <Text style={styles.item}>Total: ${total}</Text>
                         </View>
                         <View style={styles.container6}>
-                            <Text style={styles.item}>A Nombre de: {userData.data.user}</Text>
+                        <Text style={styles.item}>A Nombre de: {userData.data.user.user}</Text>
                         </View>
                     </View>
                     <View style={styles.container3}>

@@ -43,11 +43,11 @@ export default function Menu() {
     useEffect(() => {
         const fetchCategorias = async () => {
             try {
-                const response = await fetch(url + '/platillo/', {
-                    headers: {
-                      'Authorization': 'Bearer ' + userData.data.token,
-                    },
-                  });
+         const response = await fetch(url + '/platillo/', {
+  headers: {
+    'Authorization': 'Bearer ' + userData.data.token,
+  },
+});
                 if (!response.ok) {
                     throw new Error('Hubo un error en la petición');
                 }
@@ -134,8 +134,10 @@ export default function Menu() {
         }, {});
     
 
-        // console.log('platillosConCantidad:', JSON.stringify(platillosConCantidad, null, 2));
-        // console.log('cantidades:', JSON.stringify(cantidades, null, 2));
+        console.log('userData:', userData);
+        console.log('platillosSeleccionados:', platillosConCantidad);
+        console.log('cantidades:', cantidades);
+    
     navigation.navigate('VerificarP', { userData: userData, platillosSeleccionados: platillosConCantidad, cantidades: cantidades });
 }
     
