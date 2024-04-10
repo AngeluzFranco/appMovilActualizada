@@ -6,7 +6,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import Login from "./screens/Login";
 import Home from "./screens/Home";
 import Menu from "./screens/Menu";
-import Pedido from './screens/Pedido';
+// import Pedido from './screens/Pedido';
 import Splash from './screens/Splash';
 import VerificarP from './screens/VerificarP';
 import MesasPedidos from './screens/MesasPedidos';
@@ -39,12 +39,12 @@ export default function App() {
           headerShown: false
         }}
         />
-        <Stack.Screen name="Pedido" component={Pedido}
+        {/* <Stack.Screen name="Pedido" component={Pedido}
         options={{
           title: "Pedido",
           headerShown: false
         }}
-        />
+        /> */}
         <Stack.Screen name="VerificarP" component={VerificarP}
         options={{
           title: "VerificarP",
