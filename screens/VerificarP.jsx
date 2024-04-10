@@ -107,26 +107,30 @@ console.log('usedata' + JSON.stringify(userData));
                     </TouchableOpacity>
                 </View>
                 <View style={styles.container2}>
-                    <SafeAreaView style={styles.container4}>
-                        <SectionList
-                            sections={filteredData}
-                            keyExtractor={(item, index) => item + index}
-                            renderItem={({ item }) => (
-                                <View style={styles.container5}>
-                                    <View style={styles.container6}>
-                                        <Text style={styles.item}>{item.nombre}</Text><Text style={styles.item}>Precio Unitario: ${item.precio}</Text>
-
-                                    </View>
-                                    <View style={styles.container6}>
-                                        <Text style={styles.item}>{item.menu.descripcion}</Text>
-                                        <Text style={styles.item}>Cantidad: {item.cantidad}</Text>
-
-                                    </View>
-                                </View>
-                            )}
-                        />
-
-                    </SafeAreaView>
+                <SafeAreaView style={styles.container4}>
+      {
+        filteredData && filteredData.length > 0 ? (
+          <SectionList
+            sections={filteredData}
+            keyExtractor={(item, index) => item + index}
+            renderItem={({ item }) => (
+              <View style={styles.container5}>
+                <View style={styles.container6}>
+                  <Text style={styles.item}>{item.nombre}</Text>
+                  <Text style={styles.item}>Precio Unitario: ${item.precio}</Text>
+                </View>
+                <View style={styles.container6}>
+                  <Text style={styles.item}>{item.menu.descripcion}</Text>
+                  <Text style={styles.item}>Cantidad: {item.cantidad}</Text>
+                </View>
+              </View>
+            )}
+          />
+        ) : (
+          <Text>No has elegido nada</Text>
+        )
+      }
+    </SafeAreaView>
                     <View style={styles.container5}>
                         <View style={styles.container6}>
 
@@ -141,9 +145,16 @@ console.log('usedata' + JSON.stringify(userData));
                         <TouchableOpacity onPress={editarP} style={styles.loginButton}>
                             <Text style={styles.buttonText}>Editar</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={confirmarP} style={styles.loginButton}>
-                            <Text style={styles.buttonText}>Confirmar</Text>
-                        </TouchableOpacity>
+                        <TouchableOpacity 
+  onPress={confirmarP} 
+  style={[
+    styles.loginButton,
+    (!platillosSeleccionados || Object.keys(platillosSeleccionados).length === 0) ? styles.disabledButton : {}
+  ]}
+  disabled={!platillosSeleccionados || Object.keys(platillosSeleccionados).length === 0}
+>
+  <Text style={styles.buttonText}>Confirmar</Text>
+</TouchableOpacity>
                     </View>
                 </View>
             </View>
@@ -235,5 +246,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: "rgba(0, 0, 0, 1)",
     },
-
+    disabledButton: {
+        backgroundColor: 'gray',
+      },
 });
