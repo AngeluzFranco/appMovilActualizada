@@ -331,8 +331,9 @@ const styles = StyleSheet.create({
     logo: {
         width: 60,
         height: 60,
-        marginStart: 25,
-
+        marginRight: 0,
+        marginTop: 10,
+        marginLeft: 80,
     },
 
     container2: {
@@ -396,6 +397,7 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0, 0, 0, 1)",
         padding: 15,
         borderRadius: 10,
+        marginLeft: '20%',
     },
 
     buttonText: {
@@ -408,7 +410,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        
     },
 
     modal: {
@@ -421,9 +423,11 @@ const styles = StyleSheet.create({
     },
 
     closeModal: {
-        position: "relative",
-        right: -170,
-        top: -7,
+        justifyContent: 'flex-end',
+        // position: "relative",
+        // right: -170,
+        // top: -7,
+        left: 200,
     },
 
     cardModal: {

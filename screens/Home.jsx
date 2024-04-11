@@ -165,7 +165,7 @@ function MesasDisponibles({ userData }) {
                                     style={styles.button}
                                     activeOpacity={0.6}
                                     underlayColor="#DDDDDD" onPress={() => handleAbrirModal(item)}>
-                                    <Text></Text>
+                                    <Text style={{color:'#fff', fontSize:15}}>Atender</Text>
                                 </TouchableHighlight>
                             </View>
                         </View>
@@ -257,7 +257,7 @@ function MesasDisponibles({ userData }) {
   underlayColor="#DDDDDD" 
   onPress={() => IrMenu(item.numeroMesa)}
 >
-  <Text></Text>
+  <Text style={{color:'#fff', fontSize:15}}>ordenar</Text>
 </TouchableHighlight>
                                 </View>
                             </View>
@@ -287,7 +287,7 @@ export default function Home({ route }) {
     return (
         <ImageBackground
             source={require("../assets/fondo2.png")}
-            style={styles.backgroundImage}
+             style={{width: '100%', height: '100%'}}
         >
             <View style={styles.container}>
                 <View style={{ flex: 1, flexDirection: "row", padding: 10 }}>
@@ -302,7 +302,7 @@ export default function Home({ route }) {
                 <View style={styles.container2}>
                     <Tab.Navigator
                         screenOptions={{
-                            tabBarActiveTintColor: 'black',
+                            tabBarActiveTintColor: 'white',
                             tabBarInactiveTintColor: 'black',
                             tabBarStyle: { backgroundColor: 'transparent' },
                             
@@ -322,6 +322,7 @@ const styles = StyleSheet.create({
     backgroundImage: {
         width: wp('100%'),
         height: hp('100%'),
+    
     },
     container: {
         flex: 1,
@@ -331,7 +332,7 @@ const styles = StyleSheet.create({
     },
 
     container2: {
-        marginTop: '-2%',
+       
         backgroundColor: "rgba(245, 133, 0, 1)",
         borderRadius: 20,
         height: "90%",
@@ -339,10 +340,19 @@ const styles = StyleSheet.create({
     },
 
     logo: {
-        width: wp('16%'),
-        height: hp('10%'),
-        marginEnd: wp('5%'),
-        flex: 1,
+        // width: wp('10%'),
+        // height: hp('20%'),
+        // marginEnd: wp('5%'),
+        // width: 100,
+        // height: 60,
+        // marginTop: 10,
+      
+        // marginRight: 100,
+        // resizeMode: 'contain',
+        width: 60,
+        height: 60,
+        marginRight: 100,
+        marginTop: 10,
     },
     titleMesas: {
         color: "rgba(245, 133, 0, 1)", 
@@ -355,7 +365,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginBottom: 20,
         padding: 10,
-        backgroundColor: "rgba(234, 255, 221, .5)",
+        backgroundColor: "rgba(255, 255, 255, 0.6)",
         borderRadius: 20,
         height: "auto",
         justifyContent: "center",
@@ -368,7 +378,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginBottom: 20,
         padding: 10,
-        backgroundColor: "rgba(234, 255, 221, .5)",
+        backgroundColor: "rgba(255, 255, 255, 0.6)",
         borderRadius: 20,
         height: "auto",
         justifyContent: "center",
@@ -430,11 +440,14 @@ const styles = StyleSheet.create({
 
     button: {
         marginTop: 10,
-        marginLeft: '53%',
+        marginLeft: '20%',
         backgroundColor: 'rgba(245, 133, 0, 1)',
         padding: 10,
         borderRadius: 5,
-        width: 40,
+        width:100,
+        alignItems: 'center',
+        height:40,
+        alignSelf: 'center',
     },
     row: {
         flexDirection: 'row',
