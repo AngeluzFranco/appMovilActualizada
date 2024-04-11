@@ -25,11 +25,19 @@ export default function Menu() {
     const navigation = useNavigation();
     const route = useRoute();
     const userData = route.params.userData;
+    const numeroMesa = route.params.numeroMesa;
+
+console.log('numeroMesa Menu:', numeroMesa);
+
     const { url } = Backend();
 
 
 
-
+// Añade un efecto para restablecer el estado cuando cambia numeroMesa
+useEffect(() => {
+    setPlatillosSeleccionados({});
+    setCantidades({});
+}, [numeroMesa]);
 
     const [categorias, setCategorias] = useState({});
 
@@ -38,16 +46,17 @@ export default function Menu() {
 
     const [verModal, setVerModal] = useState(false);
 
+// Añade un efecto para restablecer el estado cuando cambia userData.idUsuario
 
 
     useEffect(() => {
         const fetchCategorias = async () => {
             try {
-         const response = await fetch(url + '/platillo/', {
-  headers: {
-    'Authorization': 'Bearer ' + userData.data.token,
-  },
-});
+                const response = await fetch(url + '/platillo/', {
+                    headers: {
+                        'Authorization': 'Bearer ' + userData.data.token,
+                    },
+                });
                 if (!response.ok) {
                     throw new Error('Hubo un error en la petición');
                 }
@@ -71,22 +80,30 @@ export default function Menu() {
         const intervalId = setInterval(fetchCategorias, 10000);
 
         return () => clearInterval(intervalId);
+
+
     }, [userData.idUsuario]);
 
 
-    const handleCategoriaPress = (categoria) => {
-        const platillos = categorias[categoria].map(platillo => ({
-            ...platillo,
-            cantidad: platillosSeleccionados[categoria]?.find(p => p.id === platillo.id)?.cantidad || 0,
-        }));
-        setPlatillosSeleccionados(prevPlatillos => ({
-            ...prevPlatillos,
-            [categoria]: platillos
-        }));
-        setVerModal(true);
-    };
-    
-    
+
+  // Nueva variable de estado para los platillos actuales
+const [platillosActuales, setPlatillosActuales] = useState([]);
+
+const handleCategoriaPress = (categoria) => {
+    const platillos = categorias[categoria].map(platillo => ({
+        ...platillo,
+        cantidad: platillosSeleccionados[categoria]?.find(p => p.id === platillo.id)?.cantidad || 0,
+    }));
+    setPlatillosSeleccionados(prevPlatillos => ({
+        ...prevPlatillos,
+        [categoria]: platillos
+    }));
+    // Actualiza platillosActuales con los platillos de la categoría seleccionada
+    setPlatillosActuales(platillos);
+    setVerModal(true);
+};
+
+
 
 
     const cerrarModal = () => {
@@ -119,10 +136,13 @@ export default function Menu() {
 
 
     const cancelarPedido = () => {
-        navigation.navigate('Home', { userData: data });
+        setPlatillosSeleccionados({});
+        setCantidades({});
+        navigation.navigate('Home', { userData: userData });
+        
     }
 
-
+   
 
     const handleButtonClick = () => {
         const platillosConCantidad = Object.keys(platillosSeleccionados).reduce((acc, categoria) => {
@@ -132,15 +152,24 @@ export default function Menu() {
             }
             return acc;
         }, {});
-    
 
-        console.log('userData:', userData);
-        console.log('platillosSeleccionados:', platillosConCantidad);
-        console.log('cantidades:', cantidades);
-    
-    navigation.navigate('VerificarP', { userData: userData, platillosSeleccionados: platillosConCantidad, cantidades: cantidades });
-}
-    
+
+        // console.log('userData:', userData);
+        // console.log('platillosSeleccionados:', platillosConCantidad);
+        // console.log('cantidades:', cantidades);
+
+
+   
+
+        console.log('numeroMesa antes de navegar:', numeroMesa);
+        navigation.navigate('VerificarP', { 
+          userData: userData, 
+          platillosSeleccionados: platillosConCantidad, 
+          cantidades: cantidades, 
+          numeroMesa: numeroMesa 
+        });
+    }
+
     return (
 
         <ImageBackground
@@ -158,17 +187,17 @@ export default function Menu() {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.container2}>
-                <ScrollView>
-                <View style={styles.row}>
-    {categorias && Object.keys(categorias).map((categoria, index) => (
-        <View key={index} style={{...styles.card, flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <TouchableOpacity onPress={() => handleCategoriaPress(categoria)}>
-                                <Text style={styles.cardtext}>{categoria}</Text>
-                            </TouchableOpacity>
+                    <ScrollView>
+                        <View style={styles.row}>
+                            {categorias && Object.keys(categorias).map((categoria, index) => (
+                                <View key={index} style={{ ...styles.card, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <TouchableOpacity onPress={() => handleCategoriaPress(categoria)}>
+                                        <Text style={styles.cardtext}>{categoria}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
                         </View>
-                    ))}
-                </View>
-            </ScrollView>
+                    </ScrollView>
                     <View style={{ flexDirection: 'row', marginTop: '20%' }}>
 
 
@@ -189,20 +218,21 @@ export default function Menu() {
 
                                 const platillosArray = Object.values(platillosSeleccionados);
 
-                              
+
                                 platillosArray.forEach(platillos => {
                                     platillos.forEach(platillo => {
                                         platillo.cantidad = cantidades[platillo.nombre] || 0;
                                     });
                                 });
-                                
+
                                 const platillosConCantidad = platillosArray.map(platillos =>
                                     platillos.filter(platillo => platillo.cantidad > 0)
                                 ).filter(platillos => platillos.length > 0);
-                                
+
                                 // console.log('platillosConCantidad:', JSON.stringify(platillosConCantidad, null, 2));
                                 // console.log('cantidades:', JSON.stringify(cantidades, null, 2));
-                                navigation.navigate('VerificarP', { userData: userData, platillosSeleccionados: platillosConCantidad, cantidades: cantidades });   }}
+                                navigation.navigate('VerificarP', { userData: userData, platillosSeleccionados: platillosConCantidad, cantidades: cantidades,numeroMesa });
+                            }}
                         >
                             <Text style={styles.buttonText}>Verificar</Text>
                         </TouchableOpacity>
@@ -210,73 +240,68 @@ export default function Menu() {
                 </View>
             </View>
             <Modal
-                visible={verModal}
-                animationType="slide"
-                onRequestClose={cerrarModal}
-                transparent={true}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modal}>
-                        <View style={styles.closeModal}>
-                            <Button title="X" color="black" onPress={cerrarModal} />
-                        </View>
-                        <SafeAreaView style={styles.container4}>
-
-
-
-
-                            <SectionList
-                                sections={Object.entries(platillosSeleccionados).map(([title, data]) => ({
-                                    title,
-                                    data
-                                }))}
-                                keyExtractor={(item, index) => item + index}
-                                renderItem={({ item, section }) => (
-                                    <View style={styles.cardModal}>
-                                        <View style={styles.container3}>
-                                            <View style={styles.column}>
-                                                {item && item.nombre && (
-                                                    <Text style={styles.titleNumMesa}>{item.nombre}</Text>
-                                                )}
-                                                {item && item.descripcion && (
-                                                    <Text style={styles.titleNombreMesa}>{item.descripcion}</Text>
-                                                )}
-                                            </View>
-                                            <View style={styles.column}>
-                                                <View style={styles.row2}>
-                                                    <TouchableOpacity
-                                                        style={styles.botonCantidad}
-                                                        onPress={() => {
-                                                            disminuir(item);
-                                                        }}
-                                                    >
-                                                        <Text style={styles.textBoton}>-</Text>
-                                                    </TouchableOpacity>
-                                                    <Text style={styles.inputForm}>
-                                                        {cantidades[item.nombre] || 0}
-                                                    </Text>
-                                                    <TouchableOpacity
-                                                        style={styles.botonCantidad}
-                                                        onPress={() => {
-                                                            aumentar(item);
-                                                        }}
-                                                    >
-                                                        <Text style={styles.textBoton}>+</Text>
-                                                    </TouchableOpacity>
-                                                </View>
-                                            </View>
-                                        </View>
+    visible={verModal}
+    animationType="slide"
+    onRequestClose={cerrarModal}
+    transparent={true}
+>
+    <View style={styles.modalContainer}>
+        <View style={styles.modal}>
+            <View style={styles.closeModal}>
+                <Button title="X" color="black" onPress={cerrarModal} />
+            </View>
+            <SafeAreaView style={styles.container4}>
+                <SectionList
+                    sections={platillosActuales.map((platillo, index) => ({
+                        title: `Platillo ${index + 1}`,
+                        data: [platillo]
+                    }))}
+                    keyExtractor={(item, index) => item + index}
+                    renderItem={({ item, section }) => (
+                        <View style={styles.cardModal}>
+                            <View style={styles.container3}>
+                                <View style={styles.column}>
+                                    {item && item.nombre && (
+                                        <Text style={styles.titleNumMesa}>{item.nombre}</Text>
+                                    )}
+                                    {item && item.descripcion && (
+                                        <Text style={styles.titleNombreMesa}>{item.descripcion}</Text>
+                                    )}
+                                </View>
+                                <View style={styles.column}>
+                                    <View style={styles.row2}>
+                                        <TouchableOpacity
+                                            style={styles.botonCantidad}
+                                            onPress={() => {
+                                                disminuir(item);
+                                            }}
+                                        >
+                                            <Text style={styles.textBoton}>-</Text>
+                                        </TouchableOpacity>
+                                        <Text style={styles.inputForm}>
+                                            {cantidades[item.nombre] || 0}
+                                        </Text>
+                                        <TouchableOpacity
+                                            style={styles.botonCantidad}
+                                            onPress={() => {
+                                                aumentar(item);
+                                            }}
+                                        >
+                                            <Text style={styles.textBoton}>+</Text>
+                                        </TouchableOpacity>
                                     </View>
-                                )}
-                            />
-
-                        </SafeAreaView>
-                        <TouchableOpacity style={styles.botonConfirmar} onPress={cerrarModal}>
-                            <Text style={styles.textBoton2}>Confirmar</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
+                                </View>
+                            </View>
+                        </View>
+                    )}
+                />
+            </SafeAreaView>
+            <TouchableOpacity style={styles.botonConfirmar} onPress={cerrarModal}>
+                <Text style={styles.textBoton2}>Confirmar</Text>
+            </TouchableOpacity>
+        </View>
+    </View>
+</Modal>
         </ImageBackground>
     );
 }

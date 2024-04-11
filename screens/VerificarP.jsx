@@ -17,10 +17,8 @@ import {
 } from "react-native";
 
 export default function VerificarP({ route, navigation }) {
-    const { platillosSeleccionados, userData } = route.params;
-
-    console.log('platillosSeleccionados:', JSON.stringify(platillosSeleccionados, null, 2));
-    
+    const { platillosSeleccionados, userData, numeroMesa } = route.params;
+    console.log('VerificarP numeroMesa :' + numeroMesa);
 
 
     const handleLogout = () => {
@@ -33,28 +31,27 @@ export default function VerificarP({ route, navigation }) {
 
 
     const confirmarP = () => {
-
         console.log('ConfirmarP :');
         console.log({
-            platillosSeleccionados: platillosSeleccionados,
-            userData: userData,
-            total: total,
-            mesa: mesa,
-            idPedido: idPedido
+          platillosSeleccionados: platillosSeleccionados,
+          userData: userData,
+          total: total,
+          numeroMesa: numeroMesa,
+          idPedido: idPedido
         });
         
         if (navigation && typeof navigation.replace === 'function') {
-            navigation.replace("Splash", {
-                platillosSeleccionados: platillosSeleccionados,
-                userData: userData,
-                total: total,
-                mesa: mesa,
-                idPedido: idPedido
-            });
-        }else {
-            console.error('navigation or navigation.replace is not defined');
+          navigation.replace("Splash", {
+            platillosSeleccionados: platillosSeleccionados,
+            userData: userData,
+            total: total,
+            numeroMesa: numeroMesa,
+            idPedido: idPedido
+          });
+        } else {
+          console.error('navigation or navigation.replace is not defined');
         }
-    }
+      }
 
     const filteredData = platillosSeleccionados ? platillosSeleccionados.map(section => {
         const data = Object.keys(section)
@@ -65,8 +62,6 @@ export default function VerificarP({ route, navigation }) {
             data: data
         };
     }) : [];
-    console.log('filteredData:', JSON.stringify(filteredData, null, 2));
-
 
     const calcularTotal = () => {
         let total = 0;
@@ -78,19 +73,19 @@ export default function VerificarP({ route, navigation }) {
         return total;
     }
 
-    const total = calcularTotal();
 
-    const idPedido = userData?.data?.user.pedidosBean?.[0]?.idPedido;
-    const mesa = userData?.data?.user.pedidosBean?.[0]?.mesa?.numeroMesa;
-
-console.log('12312312312:', userData.data.user.pedidosBean);
+    const pedidoMesaSeleccionada = userData?.data?.user.pedidosBean?.find(pedido => pedido.mesa?.numeroMesa === numeroMesa);
+    const idPedido = pedidoMesaSeleccionada?.idPedido;
 
 
+const total = calcularTotal();
+const mesa = userData?.data?.user.pedidosBean?.[0]?.mesa?.numeroMesa;
 
-console.log('usedata' + JSON.stringify(userData));
 
 
-    console.log('idPedido:', idPedido);
+console.log('idPedido:', idPedido);
+
+
     return (
         <ImageBackground
             source={require("../assets/fondo2.png")}
@@ -131,16 +126,15 @@ console.log('usedata' + JSON.stringify(userData));
         )
       }
     </SafeAreaView>
-                    <View style={styles.container5}>
-                        <View style={styles.container6}>
-
-                            <Text style={styles.item}>Pedido Mesa: {mesa}</Text>
-                            <Text style={styles.item}>Total: ${total}</Text>
-                        </View>
-                        <View style={styles.container6}>
-                        <Text style={styles.item}>A Nombre de: {userData.data.user.user}</Text>
-                        </View>
-                    </View>
+    <View style={styles.container5}>
+  <View style={styles.container6}>
+    <Text style={styles.item}>Pedido Mesa: {numeroMesa}</Text>
+    <Text style={styles.item}>Total: ${total}</Text>
+  </View>
+  <View style={styles.container6}>
+    <Text style={styles.item}>A Nombre de: {userData.data.user.user}</Text>
+  </View>
+</View>
                     <View style={styles.container3}>
                         <TouchableOpacity onPress={editarP} style={styles.loginButton}>
                             <Text style={styles.buttonText}>Editar</Text>

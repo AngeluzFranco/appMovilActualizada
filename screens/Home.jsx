@@ -27,7 +27,6 @@ function MesasDisponibles({ userData }) {
     const {url} = Backend();
     const navigation = useNavigation();
     const [data, setData] = useState(null);
-    console.log('userData en Mesas Disponibles:',userData.data.token); 
   
 
 
@@ -56,10 +55,10 @@ function MesasDisponibles({ userData }) {
                   Alert.alert('Error', 'Hubo un error al obtener las mesas. Por favor, intenta de nuevo más tarde.');
               });
       };
-  
+      
       fetchMesas(); 
   
-      const intervalId = setInterval(fetchMesas, 10000); 
+      const intervalId = setInterval(fetchMesas, 5000); 
   
       return () => clearInterval(intervalId); 
   }, []);
@@ -146,9 +145,7 @@ function MesasDisponibles({ userData }) {
         source={require('../assets/fondo2.png')}
         style={{...styles.backgroundImage, flex: 1}} >
         <SafeAreaView style={{...styles.container4, flex: 1}}>
-            <ScrollView>
-               
-            </ScrollView>
+          
             <SectionList
                 sections={data ? data.map((item, index) => ({ title: 'Mesa ' + (index + 1), data: [item] })) : []}
                 keyExtractor={(item, index) => item + index}
@@ -186,9 +183,6 @@ function MesasDisponibles({ userData }) {
     const { url } = Backend();
     const navigation = useNavigation();
     const [data, setData] = useState(null);
-    // console.log('userData en Mis Mesas 1:', userData); 
-    //  console.log('userData en Mis Mesas 2:', userData.data.token); 
-    //  console.log('userData en Mis Mesas 3:',userData.data.idUsuario); 
 
 
 
@@ -222,12 +216,16 @@ function MesasDisponibles({ userData }) {
 
         fetchMesas();
 
-        const intervalId = setInterval(fetchMesas, 10000);
+        const intervalId = setInterval(fetchMesas, 5000);
 
         return () => clearInterval(intervalId);
     }, [userData.idUsuario]); 
-
-    const IrMenu = () => navigation.navigate("Menu", { userData: userData });
+    const IrMenu = (numeroMesa) => {
+        navigation.navigate("Menu", { 
+          userData: userData, 
+          numeroMesa: numeroMesa 
+        });
+      };
     const IrPedido = (idMesa) => {
         navigation.navigate("MesasPedidos", { userData: userData, idMesa: idMesa });
     };
@@ -254,11 +252,13 @@ function MesasDisponibles({ userData }) {
                                             style={styles.mesa} />
                                     </TouchableOpacity>
                                     <TouchableHighlight
-                                        style={styles.button}
-                                        activeOpacity={0.6}
-                                        underlayColor="#DDDDDD" onPress={IrMenu}>
-                                        <Text></Text>
-                                    </TouchableHighlight>
+  style={styles.button}
+  activeOpacity={0.6}
+  underlayColor="#DDDDDD" 
+  onPress={() => IrMenu(item.numeroMesa)}
+>
+  <Text></Text>
+</TouchableHighlight>
                                 </View>
                             </View>
                         </View>
