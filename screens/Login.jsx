@@ -7,10 +7,10 @@ import {
   ImageBackground,
   Text,
   TouchableOpacity,
+  ActivityIndicator, // Importa ActivityIndicator
 } from 'react-native';
 import { Backend } from '../config/backendconfig';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-
 
 import Icon from "react-native-vector-icons/FontAwesome";
 
@@ -20,34 +20,34 @@ const Login = () => {
 
   let [user, setUser] = useState('');
   let [password, setPassword] = useState('');
+  let [isLoading, setIsLoading] = useState(false); // Nuevo estado para controlar el indicador de actividad
   let intentos = 0;
   const { url } = Backend();
 
-
-
-
   const checkUser = async () => {
+    setIsLoading(true); // Inicia el indicador de actividad
+    // Verifica si los datos ingresados están vacíos
+    if (!user || !password) {
+      Alert.alert('Error', 'Por favor, ingresa tu usuario y contraseña.');
+      setIsLoading(false); // Detiene el indicador de actividad
+      return;
+    }
+  
     try {
       const payload = { user: user, password: password };
       console.log(payload);
-      const response = await fetch("http://192.168.0.53:8080/api/auth/signin", {
+      const response = await fetch("http://192.168.0.52:8080/api/auth/signin", {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
-
-
         body: JSON.stringify(payload),
-
       })
-
-
-
-
+  
       console.log('Response:', response);
       if (response.ok && response.status === 200) {
         const data = await response.json();
         console.log(data);
         if (data.data.roles.role === 'WAITER_ROLE') {
-          Alert.alert(`Bienvenido!`, undefined, [
+          Alert.alert('Bienvenido!', undefined, [
             {
               text: 'Gracias', onPress: () => navigation.replace('Home', { userData: data })
             }
@@ -55,23 +55,23 @@ const Login = () => {
         } else {
           Alert.alert('Error', 'No tienes permisos para iniciar sesión.');
         }
+      } else {
+        // Agrega una alerta si los datos ingresados son incorrectos
+        Alert.alert('Error', 'Usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.');
       }
     } catch (error) {
       console.error('Error:', error);
       Alert.alert('Error', 'Hubo un problema al intentar iniciar sesión. Por favor, inténtalo de nuevo.');
+    } finally {
+      setIsLoading(false); // Detiene el indicador de actividad
     }
   }
 
   return (
-
-
-      
     <ImageBackground
       source={require("../assets/fondo.png")}
       style={styles.backgroundImage}
     >
-
-    
       <View
         style={{ flex: 1, flexDirection: "row", marginTop: '10%' , justifyContent: 'space-around'}}
       >
@@ -81,70 +81,6 @@ const Login = () => {
           style={styles.logo}
         />
       </View>
-
-
-
-
-      <View style={styles.container}>
-        {
-          <View style={styles.container}>
-            <View style={styles.formContainer}>
-         
-              <Text style={styles.titleLogin}>Bienvenido</Text>
-              <Text style={styles.TextLogin}>
-                Inicie sesión para poder acceder a las funciones del sistema
-              </Text>
-              <View style={styles.inputContainer}>
-                <Icon name="user" size={20} color="green" style={styles.icon} />
-                <TextInput
-                  placeholder="User"
-                  placeholderTextColor={'white'}
-                  value={user}
-                  onChangeText={setUser}
-                  style={styles.inputForm}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Icon name="lock" size={20} color="green" style={styles.icon} />
-                <TextInput
-                  placeholder="Password"
-                  placeholderTextColor={'white'}
-                  value={password}
-                  onChangeText={setPassword}
-                  style={styles.inputForm}
-                  secureTextEntry
-                />
-              </View>
-              <TouchableOpacity
-                style={styles.loginButton}
-                onPress={checkUser}
-              >
-                <Text style={styles.buttonText}>Iniciar Sesión</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        }
-      </View>
-    </ImageBackground>
-  );return (
-  
-    <ImageBackground
-      source={require("../assets/fondo.png")}
-      style={styles.backgroundImage}
-    >
-
-
-      <View
-       
-        style={{ flex: 1, flexDirection: "row", marginTop: '10%' , justifyContent: 'space-around'}}
-      >
-        <Text style={styles.titleGastromanager}>Gastromanager</Text>
-        <Image
-          source={require("../assets/gastromanager2.png")}
-          style={styles.logo}
-        />
-      </View>
-
 
       <View style={styles.container}>
         {
@@ -178,15 +114,20 @@ const Login = () => {
               <TouchableOpacity
                 style={styles.loginButton}
                 onPress={checkUser}
+                disabled={isLoading} // Deshabilita el botón durante el inicio de sesión
               >
-                <Text style={styles.buttonText}>Iniciar Sesión</Text>
+                {isLoading ? (
+                  <ActivityIndicator size="small" color="#ffffff" /> // Muestra el indicador de actividad durante el inicio de sesión
+                ) : (
+                  <Text style={styles.buttonText}>Iniciar Sesión</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
         }
       </View>
     </ImageBackground>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -207,7 +148,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    
   },
 
   backgroundImage: {
