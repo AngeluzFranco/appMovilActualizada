@@ -227,6 +227,7 @@ function MesasDisponibles({ userData }) {
         });
       };
     const IrPedido = (idMesa) => {
+        console.log("idMesa", idMesa);
         navigation.navigate("MesasPedidos", { userData: userData, idMesa: idMesa });
     };
     return (

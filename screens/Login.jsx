@@ -36,7 +36,7 @@ const Login = () => {
     try {
       const payload = { user: user, password: password };
       console.log(payload);
-      const response = await fetch("http://192.168.0.52:8080/api/auth/signin", {
+      const response = await fetch("http://GastroManagerzzz-env.eba-pe7hcsjz.us-east-1.elasticbeanstalk.com/api/auth/signin", {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

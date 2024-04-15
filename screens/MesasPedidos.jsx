@@ -89,7 +89,7 @@ export default function MesasPedidos({ navigation }) {
               <View style={styles.container3}>
                 <View style={styles.column}>
                   <Text style={styles.titleNumMesa}>Pedido: {pedido.idPedido}</Text>
-                  <Text style={styles.titleNombreMesa}>Para la mesa: {pedido.mesa.idMesa}</Text>
+                  <Text style={styles.titleNombreMesa}>Para la mesa: {pedido.mesa && pedido.mesa.idMesa}</Text>
                   <Text style={styles.titleNombreMesa}>Estado: {pedido.estado}</Text>
                 </View>
                 <View style={styles.column}>

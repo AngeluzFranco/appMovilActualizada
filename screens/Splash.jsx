@@ -1,4 +1,4 @@
-import { useNavigation , useRoute} from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -7,68 +7,99 @@ import { Backend } from "../config/backendconfig";
 const Splash = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const {url} = Backend();
-  
+  const { url } = Backend();
+
+
+
+
   useEffect(() => {
-    const platillosSeleccionados = route.params?.platillosSeleccionados.flat();       
+    const platillosSeleccionados = route.params?.platillosSeleccionados.flat();
     console.log('idPedido:', route.params?.idPedido);
-   
+
     const postPedido = (platillo) => {
-      const detallesPedidoBean = {
-          platillo: {
-              idPlatillo: platillo.idPlatillo
-          },
-          cantidad: platillo.cantidad,
-          pedido: {
-              idPedido: route.params?.idPedido
-          },
-          precio_total: platillo.precio * platillo.cantidad
-      };
-    
-      console.log('Datos antes de la petición:', detallesPedidoBean);
-    
-      fetch(url + '/detallepedido/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + route.params?.userData.data.token,
-        },
-        body: JSON.stringify(detallesPedidoBean)
-      })
+        const detallesPedidoBean = {
+            platillo: {
+                idPlatillo: platillo.idPlatillo
+            },
+            cantidad: platillo.cantidad,
+            pedido: {
+                idPedido: route.params?.idPedido
+            },
+            precio_total: platillo.precio * platillo.cantidad
+        };
 
-      .then(response => {
-          if (!response.ok) {
-              console.error('Error status:', response.status);
-              return response.text().then(text => {
-                  throw new Error('Error response text: ' + text);
-              });
-          }
-          return response.json();
-      })
-      .then(data => {
-          console.log('Datos después de la petición:', data);
-      })
-      .catch((error) => {
-          console.error('Error:', error);
-          Alert.alert('Error', 'Hubo un error al enviar el pedido. Por favor, intenta de nuevo más tarde.');
-      });
-    };
-    
-    platillosSeleccionados.forEach(postPedido);
+        console.log('Datos antes de la petición:', detallesPedidoBean);
+        console.log('Token:', route.params?.userData.data.token);
+        console.log('URL:', url + '/detallepedido/');
 
-    const timeoutId = setTimeout(() => {
-        navigation.replace('Home',  {
-            userData: route.params?.userData,
-            platillosSeleccionados: platillosSeleccionados,
-            total: route.params?.total,
-            mesa: route.params?.mesa,
-            idPedido: route.params?.idPedido
+        fetch(url + '/detallepedido/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + route.params?.userData.data.token,
+            },
+            body: JSON.stringify(detallesPedidoBean)
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.error('Error status:', response.status);
+                return response.text().then(text => {
+                    throw new Error('Error response text: ' + text);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Datos después de la petición:', data);
+
+    
+            const notificacionesDto = {
+              tipo: "Urgente",
+              descripcion: "Comanda Actualizada",
+              fecha: new Date().toLocaleString('en-CA', { timeZone: 'America/Mexico_City' }).split(' ')[0].replace(/,/g, ''), 
+              status: "Activo",
+              usuarioId: 3
+          };
+          
+          console.log('Datos antes de la segunda petición:', notificacionesDto);
+          console.log('URL:', url + '/notificacion/');
+          console.log('Token2:', 'Bearer ' + route.params?.userData.data.token); 
+          
+          return fetch(url + '/notificacion/', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + route.params?.userData.data.token,
+              },
+              body: JSON.stringify(notificacionesDto)
+          });
+        })
+
+
+        .then(response => {
+            if (!response.ok) {
+                console.error('Error status:', response.status);
+                return response.text().then(text => {
+                    throw new Error('Error response text: ' + text);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+     
+            console.log('Datos después de la segunda petición:', data);
+            navigation.replace('Home', { userData: route.params?.userData });
+           
+        })
+    
+        .catch((error) => {
+            console.error('Error:', error);
+            Alert.alert('Error', 'Hubo un error al enviar el pedido. Por favor, intenta de nuevo más tarde.');
         });
-    }, 1000);
+    };
 
-    return () => clearTimeout(timeoutId);
-}, [navigation, route, url]);
-
+    platillosSeleccionados.forEach(postPedido);
+}, []);
 
   return (
     <View style={style.container}>

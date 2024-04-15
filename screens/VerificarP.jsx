@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import {
     View,
     Image,
@@ -15,10 +15,16 @@ import {
     SectionList,
     StatusBar,
 } from "react-native";
+import { Backend } from "../config/backendconfig";
+
 
 export default function VerificarP({ route, navigation }) {
+
+  const { url } = Backend();
+
+
+
     const { platillosSeleccionados, userData, numeroMesa } = route.params;
-    console.log('VerificarP numeroMesa :' + numeroMesa);
 
 
     const handleLogout = () => {
@@ -48,7 +54,7 @@ export default function VerificarP({ route, navigation }) {
             numeroMesa: numeroMesa,
             idPedido: idPedido
           });
-        } else {
+        }else {
           console.error('navigation or navigation.replace is not defined');
         }
       }
@@ -74,16 +80,59 @@ export default function VerificarP({ route, navigation }) {
     }
 
 
-    const pedidoMesaSeleccionada = userData?.data?.user.pedidosBean?.find(pedido => pedido.mesa?.numeroMesa === numeroMesa);
-    const idPedido = pedidoMesaSeleccionada?.idPedido;
 
 
+console.log('userData wasasd:', userData.data.user.idUsuario);
+    
+    const [pedidos, setPedidos] = useState(null);
+    const [currentOrder, setCurrentOrder] = useState(null);
+    const [idPedido, setIdPedido] = useState(null);
+    
+    useEffect(() => {
+      const getPedidos = async () => {
+        if (userData && userData.data.user.idUsuario) {
+          try {
+            const requestUrl = `${url}/pedidos/`;
+            console.log('Sending request to:', requestUrl);
+            const response = await fetch(requestUrl, {
+              headers: {
+                Authorization: `Bearer ${userData.data.token}`,
+              },
+            });
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const responseJson = await response.json();
+            console.log('Response from /pedidos/ endpoint:', responseJson);
+    
+            const currentOrder = responseJson.data.find(
+              pedido =>
+                pedido.usuario.idUsuario === userData.data.user.idUsuario &&
+                pedido.mesa.idMesa === numeroMesa &&
+                pedido.estado === "En proceso"
+            );
+    
+            if (currentOrder) {
+              console.log(`Found order with idPedido: ${currentOrder.idPedido}`);
+              setCurrentOrder(currentOrder);
+              setIdPedido(currentOrder.idPedido);
+            } else {
+              console.log('No matching order found');
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        } else {
+          console.log('userData, userData.data, userData.data.user, or userData.data.user.idUsuario is undefined');
+        }
+      };
+    
+      getPedidos();
+    }, [userData]);
+    
 const total = calcularTotal();
 const mesa = userData?.data?.user.pedidosBean?.[0]?.mesa?.numeroMesa;
 
-
-
-console.log('idPedido:', idPedido);
 
 
     return (
@@ -128,7 +177,7 @@ console.log('idPedido:', idPedido);
     </SafeAreaView>
     <View style={styles.container5}>
   <View style={styles.container6}>
-    <Text style={styles.item}>Pedido Mesa: {numeroMesa}</Text>
+  <Text>{idPedido ? `Pedido Mesa: ${idPedido}` : 'Cargando pedido...'}</Text>
     <Text style={styles.item}>Total: ${total}</Text>
   </View>
   <View style={styles.container6}>
