@@ -32,8 +32,6 @@ console.log('numeroMesa Menu:', numeroMesa);
     const { url } = Backend();
 
 
-
-// Añade un efecto para restablecer el estado cuando cambia numeroMesa
 useEffect(() => {
     setPlatillosSeleccionados({});
     setCantidades({});
@@ -86,7 +84,6 @@ useEffect(() => {
 
 
 
-  // Nueva variable de estado para los platillos actuales
 const [platillosActuales, setPlatillosActuales] = useState([]);
 
 const handleCategoriaPress = (categoria) => {
@@ -98,7 +95,7 @@ const handleCategoriaPress = (categoria) => {
         ...prevPlatillos,
         [categoria]: platillos
     }));
-    // Actualiza platillosActuales con los platillos de la categoría seleccionada
+  
     setPlatillosActuales(platillos);
     setVerModal(true);
 };
@@ -153,10 +150,6 @@ const handleCategoriaPress = (categoria) => {
             return acc;
         }, {});
 
-
-        // console.log('userData:', userData);
-        // console.log('platillosSeleccionados:', platillosConCantidad);
-        // console.log('cantidades:', cantidades);
 
 
    
@@ -229,9 +222,7 @@ const handleCategoriaPress = (categoria) => {
                                     platillos.filter(platillo => platillo.cantidad > 0)
                                 ).filter(platillos => platillos.length > 0);
 
-                                // console.log('platillosConCantidad:', JSON.stringify(platillosConCantidad, null, 2));
-                                // console.log('cantidades:', JSON.stringify(cantidades, null, 2));
-                                navigation.navigate('VerificarP', { userData: userData, platillosSeleccionados: platillosConCantidad, cantidades: cantidades,numeroMesa });
+                           navigation.navigate('VerificarP', { userData: userData, platillosSeleccionados: platillosConCantidad, cantidades: cantidades,numeroMesa });
                             }}
                         >
                             <Text style={styles.buttonText}>Verificar</Text>
@@ -424,9 +415,7 @@ const styles = StyleSheet.create({
 
     closeModal: {
         justifyContent: 'flex-end',
-        // position: "relative",
-        // right: -170,
-        // top: -7,
+
         left: 200,
     },
 

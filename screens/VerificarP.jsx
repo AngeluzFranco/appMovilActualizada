@@ -32,7 +32,7 @@ export default function VerificarP({ route, navigation }) {
     };
 
     const editarP = () => {
-        navigation.navigate("Menu", { userData: userData, platillosSeleccionados: platillosSeleccionados });
+        navigation.navigate("Menu", { userData: userData, platillosSeleccionados: platillosSeleccionados, idPedido: idPedido, numeroMesa: numeroMesa  });
     }
 
 

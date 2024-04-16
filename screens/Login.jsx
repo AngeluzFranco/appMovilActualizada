@@ -7,7 +7,7 @@ import {
   ImageBackground,
   Text,
   TouchableOpacity,
-  ActivityIndicator, // Importa ActivityIndicator
+  ActivityIndicator, 
 } from 'react-native';
 import { Backend } from '../config/backendconfig';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -20,16 +20,15 @@ const Login = () => {
 
   let [user, setUser] = useState('');
   let [password, setPassword] = useState('');
-  let [isLoading, setIsLoading] = useState(false); // Nuevo estado para controlar el indicador de actividad
+  let [isLoading, setIsLoading] = useState(false);
   let intentos = 0;
   const { url } = Backend();
 
   const checkUser = async () => {
-    setIsLoading(true); // Inicia el indicador de actividad
-    // Verifica si los datos ingresados están vacíos
+    setIsLoading(true);
     if (!user || !password) {
       Alert.alert('Error', 'Por favor, ingresa tu usuario y contraseña.');
-      setIsLoading(false); // Detiene el indicador de actividad
+      setIsLoading(false); 
       return;
     }
   
@@ -56,14 +55,14 @@ const Login = () => {
           Alert.alert('Error', 'No tienes permisos para iniciar sesión.');
         }
       } else {
-        // Agrega una alerta si los datos ingresados son incorrectos
+        
         Alert.alert('Error', 'Usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.');
       }
     } catch (error) {
       console.error('Error:', error);
       Alert.alert('Error', 'Hubo un problema al intentar iniciar sesión. Por favor, inténtalo de nuevo.');
     } finally {
-      setIsLoading(false); // Detiene el indicador de actividad
+      setIsLoading(false);
     }
   }
 
@@ -114,10 +113,10 @@ const Login = () => {
               <TouchableOpacity
                 style={styles.loginButton}
                 onPress={checkUser}
-                disabled={isLoading} // Deshabilita el botón durante el inicio de sesión
+                disabled={isLoading} 
               >
                 {isLoading ? (
-                  <ActivityIndicator size="small" color="#ffffff" /> // Muestra el indicador de actividad durante el inicio de sesión
+                  <ActivityIndicator size="small" color="#ffffff" /> 
                 ) : (
                   <Text style={styles.buttonText}>Iniciar Sesión</Text>
                 )}
