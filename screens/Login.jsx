@@ -23,7 +23,7 @@ const Login = () => {
   let [isLoading, setIsLoading] = useState(false);
   let intentos = 0;
   const { url } = Backend();
-
+  
   const checkUser = async () => {
     setIsLoading(true);
     if (!user || !password) {
@@ -65,7 +65,7 @@ const Login = () => {
       setIsLoading(false);
     }
   }
-
+  
   return (
     <ImageBackground
       source={require("../assets/fondo.png")}
@@ -80,7 +80,7 @@ const Login = () => {
           style={styles.logo}
         />
       </View>
-
+  
       <View style={styles.container}>
         {
           <View style={styles.container}>
@@ -97,6 +97,7 @@ const Login = () => {
                   value={user}
                   onChangeText={setUser}
                   style={styles.inputForm}
+                  editable={!isLoading} // Añadido aquí
                 />
               </View>
               <View style={styles.inputContainer}>
@@ -108,6 +109,7 @@ const Login = () => {
                   onChangeText={setPassword}
                   style={styles.inputForm}
                   secureTextEntry
+                  editable={!isLoading} // Añadido aquí
                 />
               </View>
               <TouchableOpacity
