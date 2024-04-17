@@ -10,6 +10,7 @@ import {
   Modal,
   Alert,
   TextInput,
+  ScrollView,
   ImageBackground,
   Text,
   TouchableOpacity,
@@ -38,8 +39,8 @@ export default function MesasPedidos({ navigation }) {
   const handleLogout = () => {
     navigation.navigate("Home", { userData: userData });
   };
-  
-  
+
+
   const updatePedidoEstado = async (pedidoId, nuevoEstado) => {
     try {
       const token = userData.data.token;
@@ -55,40 +56,51 @@ export default function MesasPedidos({ navigation }) {
         throw new Error('Hubo un error al actualizar el estado del pedido');
       }
       // Actualiza los pedidos después de la actualización del estado
-     
+
     } catch (error) {
       console.error(error);
     }
   };
-  
+
 
   useEffect(() => {
     navigation.setOptions({
-        headerLeft: () => null,
-        headerBackTitle: () => null,
-        headerTitle: () => null,
-        headerShown: false,
+      headerLeft: () => null,
+      headerBackTitle: () => null,
+      headerTitle: () => null,
+      headerShown: false,
     });
-}, []);
-    
+  }, []);
+
 
   const [pedidos, setPedidos] = useState([]);
 
   useEffect(() => {
-    fetch(`${url}/pedidos/mesa/${idMesa}`, {
-      headers: {
-        'Authorization': 'Bearer ' + userData.data.token,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setPedidos(data);
-        console.log('Pedidos:', data);
+    const fetchPedidos = () => {
+      fetch(`${url}/pedidos/mesa/${idMesa}`, {
+        headers: {
+          'Authorization': 'Bearer ' + userData.data.token,
+        },
       })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  }, []);
+        .then((response) => response.json())
+        .then((data) => {
+          setPedidos(data);
+          console.log('Pedidos:', data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    };
+  
+
+    fetchPedidos();
+  
+  
+    const intervalId = setInterval(fetchPedidos, 5000);
+  
+ 
+    return () => clearInterval(intervalId);
+  }, [idMesa, userData]);
 
 
   return (
@@ -96,147 +108,153 @@ export default function MesasPedidos({ navigation }) {
       source={require("../assets/fondo2.png")}
       style={styles.backgroundImage}
     >
-      <View style={styles.container}>
-        <View style={{ flex: 1, flexDirection: "row", padding: 10 }}>
-          <Text style={styles.titleMesas}>Pedidos</Text>
-          <TouchableOpacity onPress={handleLogout}>
-            <Image
-              source={require("../assets/gastromanager3.png")}
-              style={styles.logo}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.container2}>
-          {pedidos.length > 0 && pedidos.map((pedido, index) => (
-            <View key={index} style={styles.formContainer2}>
-              <View style={styles.container3}>
-                <View style={styles.column}>
-                  <Text style={styles.titleNumMesa}>Pedido: {pedido.idPedido}</Text>
-                  <Text style={styles.titleNombreMesa}>Para la mesa: {pedido.mesa && pedido.mesa.idMesa}</Text>
-                  <Text style={styles.titleNombreMesa}>Estado: {pedido.estado}</Text>
-                </View>
-                <View style={styles.column}>
-                  <Image
-                    source={require("../assets/pedido.png")}
-                    style={styles.mesa} />
-                    
+      <ScrollView>
+    
+        <View style={styles.container}>
+          <View style={{ flex: 1, flexDirection: "row", padding: 10 }}>
+            <Text style={styles.titleMesas}>Pedidos</Text>
+            <TouchableOpacity onPress={handleLogout}>
+              <Image
+                source={require("../assets/gastromanager3.png")}
+                style={styles.logo}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.container2}>
+            {pedidos.length > 0 && pedidos.map((pedido, index) => (
+              <View key={index} style={styles.formContainer2}>
+                <View style={styles.container3}>
+                  <View style={styles.column}>
+                    <Text style={styles.titleNumMesa}>Pedido: {pedido.idPedido}</Text>
+                    <Text style={styles.titleNombreMesa}>Para la mesa: {pedido.mesa && pedido.mesa.idMesa}</Text>
+                    <Text style={styles.titleNombreMesa}>Estado: {pedido.estado}</Text>
+                  </View>
+                  <View style={styles.column}>
+                    <Image
+                      source={require("../assets/pedido.png")}
+                      style={styles.mesa} />
+
 
 
                     <View style={{ flexDirection: 'row' }}>
-                    <TouchableHighlight
-  style={styles.buttonPagar}
-  activeOpacity={0.6}
-  underlayColor="#DDDDDD"
-  onPress={() => {
-    if (pedido.estado === 'Pagar') {
-      Alert.alert('Aviso', 'El pedido ya está listo para pagar.');
-      return;
-    }
-    Alert.alert(
-      'Confirmar pago',
-      '¿Estás seguro de que quieres levantar el pedido?',
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Aceptar',
-          onPress: async () => {
-            if (pedido.estado === 'Terminado') {
-              await updatePedidoEstado(pedido.idPedido, 'Pagar');
-              Alert.alert('Exito', 'El pedido ha sido liberado para pagar"');
-            } else {
-              // Mostrar un mensaje o alerta indicando que el pedido no está en estado "Terminado"
-              Alert.alert('Aviso', 'El pedido no ha sido terminado.');
-            }
-          }
-        }
-      ],
-      { cancelable: false }
-    );
-  }}>
-  <Text style={{color:'#fff'}}> Pagar</Text>
-</TouchableHighlight>
-  <TouchableHighlight
-    style={styles.button}
-    activeOpacity={0.6}
-    underlayColor="#DDDDDD"
-    onPress={() => {
-      setSelectedPedido(pedido);
-      setModalVisible(true);
-    }}>
-    <Text style={{color:'#fff'}}> Ver</Text>
-  </TouchableHighlight>
-</View>
+                      <TouchableHighlight
+                        style={styles.buttonPagar}
+                        activeOpacity={0.6}
+                        underlayColor="#DDDDDD"
+                        onPress={() => {
+                          if (pedido.estado === 'Pagar') {
+                            Alert.alert('Aviso', 'El pedido ya está listo para pagar.');
+                            return;
+                          }
+                          Alert.alert(
+                            'Confirmar pago',
+                            '¿Estás seguro de que quieres levantar el pedido?',
+                            [
+                              {
+                                text: 'Cancelar',
+                                style: 'cancel',
+                              },
+                              {
+                                text: 'Aceptar',
+                                onPress: async () => {
+                                  if (pedido.estado === 'Terminado') {
+                                    await updatePedidoEstado(pedido.idPedido, 'Pagar');
+                                    Alert.alert('Exito', 'El pedido ha sido liberado para pagar"');
+                                  } else {
+                                    // Mostrar un mensaje o alerta indicando que el pedido no está en estado "Terminado"
+                                    Alert.alert('Aviso', 'El pedido no ha sido terminado.');
+                                  }
+                                }
+                              }
+                            ],
+                            { cancelable: false }
+                          );
+                        }}>
+                        <Text style={{ color: '#fff' }}> Pagar</Text>
+                      </TouchableHighlight>
+                      <TouchableHighlight
+                        style={styles.button}
+                        activeOpacity={0.6}
+                        underlayColor="#DDDDDD"
+                        onPress={() => {
+                          setSelectedPedido(pedido);
+                          setModalVisible(true);
+                        }}>
+                        <Text style={{ color: '#fff' }}> Ver</Text>
+                      </TouchableHighlight>
+                    </View>
+                  </View>
                 </View>
+
               </View>
-            </View>
-          ))}
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              setModalVisible(!modalVisible);
-            }}
-          >
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                {/* <Text style={styles.modalText}>Pedido: {selectedPedido?.idPedido}</Text>
+
+            ))}
+
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  {/* <Text style={styles.modalText}>Pedido: {selectedPedido?.idPedido}</Text>
                 <Text style={styles.modalText}>Para la mesa: {selectedPedido?.mesa.idMesa}</Text>
                 <Text style={styles.modalText}>Estado: {selectedPedido?.estado}</Text> */}
 
-                <View style={styles.headerRow}>
-                  <View style={styles.cell}>
-                    <Text style={styles.headerText}>Platillo</Text>
-                  </View>
-                  <View style={styles.cell}>
-                    <Text style={styles.headerText}>Precio</Text>
-                  </View>
-                  <View style={styles.cell}>
-                    <Text style={styles.headerText}>Cantidad</Text>
-                  </View>
-                  <View style={styles.cell}>
-                    <Text style={styles.headerText}>Total</Text>
-                  </View>
-                </View>
-
-                {selectedPedido?.detallesPedidoBean.length > 0 ? (
-                  selectedPedido?.detallesPedidoBean.map((detalle, index) => (
-                    <View key={index} style={styles.row}>
-                      <View style={styles.cell}>
-                        <Text style={styles.cellText}>{detalle.platillo.nombre}</Text>
-                      </View>
-                      <View style={styles.cell}>
-                        <Text style={styles.cellText}>{detalle.platillo.precio}</Text>
-                      </View>
-                      <View style={styles.cell}>
-                        <Text style={styles.cellText}>{detalle.cantidad}</Text>
-                      </View>
-                      <View style={styles.cell}>
-                        <Text style={styles.cellText}>{(detalle.platillo.precio) * (detalle.cantidad)}</Text>
-                      </View>
+                  <View style={styles.headerRow}>
+                    <View style={styles.cell}>
+                      <Text style={styles.headerText}>Platillo</Text>
                     </View>
-                  ))
-                ) : (
-                  <Text>No se ha ordenado ningún platillo.</Text>
-                )}
+                    <View style={styles.cell}>
+                      <Text style={styles.headerText}>Precio</Text>
+                    </View>
+                    <View style={styles.cell}>
+                      <Text style={styles.headerText}>Cantidad</Text>
+                    </View>
+                    <View style={styles.cell}>
+                      <Text style={styles.headerText}>Total</Text>
+                    </View>
+                  </View>
+
+                  {selectedPedido?.detallesPedidoBean.length > 0 ? (
+                    selectedPedido?.detallesPedidoBean.map((detalle, index) => (
+                      <View key={index} style={styles.row}>
+                        <View style={styles.cell}>
+                          <Text style={styles.cellText}>{detalle.platillo.nombre}</Text>
+                        </View>
+                        <View style={styles.cell}>
+                          <Text style={styles.cellText}>{detalle.platillo.precio}</Text>
+                        </View>
+                        <View style={styles.cell}>
+                          <Text style={styles.cellText}>{detalle.cantidad}</Text>
+                        </View>
+                        <View style={styles.cell}>
+                          <Text style={styles.cellText}>{(detalle.platillo.precio) * (detalle.cantidad)}</Text>
+                        </View>
+                      </View>
+                    ))
+                  ) : (
+                    <Text>No se ha ordenado ningún platillo.</Text>
+                  )}
 
 
 
 
-                <Pressable
-                  style={ styles.buttonClose}
-                  onPress={() => setModalVisible(!modalVisible)}
-                >
-                  <Text style={styles.textStyle}>Cerrar</Text>
-                </Pressable>
+                  <Pressable
+                    style={styles.buttonClose}
+                    onPress={() => setModalVisible(!modalVisible)}
+                  >
+                    <Text style={styles.textStyle}>Cerrar</Text>
+                  </Pressable>
+                </View>
               </View>
-            </View>
-          </Modal>
+            </Modal>
+          </View>
         </View>
-      </View>
+       </ScrollView>
     </ImageBackground>
   );
 }
@@ -379,18 +397,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(245, 133, 0, 1)',
     padding: 10,
     borderRadius: 5,
-    width:100,
+    width: 100,
     alignSelf: 'center',
-        height:40,
-        alignItems: 'center',
+    height: 40,
+    alignItems: 'center',
   },
   buttonPagar: {
     marginTop: 10,
-    backgroundColor: 'rgba(245, 133, 0, 1)',
+    backgroundColor: '#ff1736',
     padding: 10,
     borderRadius: 5,
     width: 100,
     height: 40,
+    marginRight: 10,
     alignItems: 'center',
   },
   centeredView: {
@@ -423,7 +442,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     borderRadius: 10,
     alignContent: 'center',
-    justifyContent  : 'center',
+    justifyContent: 'center',
   },
   textStyle: {
     color: "white",

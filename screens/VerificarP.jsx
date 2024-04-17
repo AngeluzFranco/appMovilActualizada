@@ -79,14 +79,43 @@ export default function VerificarP({ route, navigation }) {
         return total;
     }
 
-
-
+    const crearNuevoPedido = async () => {
+      try {
+        const requestUrl = `${url}/pedidos/`;
+        console.log('Sending POST request to:', requestUrl);
+        const response = await fetch(requestUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${userData.data.token}`,
+          },
+          body: JSON.stringify({
+            estado: 'En proceso',
+            usuario: {
+              idUsuario: userData.data.user.idUsuario,
+            },
+            mesa: {
+              idMesa: numeroMesa,
+            },
+          }),
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const responseJson = await response.json();
+        console.log('Response from POST /pedidos/ endpoint:', responseJson);
+        return responseJson.data; // Return the new order
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
 console.log('userData wasasd:', userData.data.user.idUsuario);
     
     const [pedidos, setPedidos] = useState(null);
     const [currentOrder, setCurrentOrder] = useState(null);
     const [idPedido, setIdPedido] = useState(null);
+
     
     useEffect(() => {
       const getPedidos = async () => {
@@ -118,7 +147,12 @@ console.log('userData wasasd:', userData.data.user.idUsuario);
               setIdPedido(currentOrder.idPedido);
             } else {
               console.log('No matching order found');
+             
+              const newOrder = await crearNuevoPedido();
+              setCurrentOrder(newOrder);
+              setIdPedido(newOrder.idPedido);
             }
+          
           } catch (error) {
             console.error(error);
           }
@@ -129,7 +163,8 @@ console.log('userData wasasd:', userData.data.user.idUsuario);
     
       getPedidos();
     }, [userData]);
-    
+
+
 const total = calcularTotal();
 const mesa = userData?.data?.user.pedidosBean?.[0]?.mesa?.numeroMesa;
 
