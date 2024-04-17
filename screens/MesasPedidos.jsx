@@ -38,7 +38,29 @@ export default function MesasPedidos({ navigation }) {
   const handleLogout = () => {
     navigation.navigate("Home", { userData: userData });
   };
-
+  
+  
+  const updatePedidoEstado = async (pedidoId, nuevoEstado) => {
+    try {
+      const token = userData.data.token;
+      const response = await fetch(`${url}/pedidos/${pedidoId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ estado: nuevoEstado })
+      });
+      if (!response.ok) {
+        throw new Error('Hubo un error al actualizar el estado del pedido');
+      }
+      // Actualiza los pedidos después de la actualización del estado
+     
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
 
   useEffect(() => {
     navigation.setOptions({
@@ -48,7 +70,7 @@ export default function MesasPedidos({ navigation }) {
         headerShown: false,
     });
 }, []);
-
+    
 
   const [pedidos, setPedidos] = useState([]);
 
@@ -67,6 +89,7 @@ export default function MesasPedidos({ navigation }) {
         console.error('Error:', error);
       });
   }, []);
+
 
   return (
     <ImageBackground
@@ -96,16 +119,56 @@ export default function MesasPedidos({ navigation }) {
                   <Image
                     source={require("../assets/pedido.png")}
                     style={styles.mesa} />
-                  <TouchableHighlight
-                    style={styles.button}
-                    activeOpacity={0.6}
-                    underlayColor="#DDDDDD"
-                    onPress={() => {
-                      setSelectedPedido(pedido);
-                      setModalVisible(true);
-                    }}>
-                    <Text style={{color:'#fff'}}> Ver</Text>
-                  </TouchableHighlight>
+                    
+
+
+                    <View style={{ flexDirection: 'row' }}>
+                    <TouchableHighlight
+  style={styles.buttonPagar}
+  activeOpacity={0.6}
+  underlayColor="#DDDDDD"
+  onPress={() => {
+    if (pedido.estado === 'Pagar') {
+      Alert.alert('Aviso', 'El pedido ya está listo para pagar.');
+      return;
+    }
+    Alert.alert(
+      'Confirmar pago',
+      '¿Estás seguro de que quieres levantar el pedido?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Aceptar',
+          onPress: async () => {
+            if (pedido.estado === 'Terminado') {
+              await updatePedidoEstado(pedido.idPedido, 'Pagar');
+              Alert.alert('Exito', 'El pedido ha sido liberado para pagar"');
+            } else {
+              // Mostrar un mensaje o alerta indicando que el pedido no está en estado "Terminado"
+              Alert.alert('Aviso', 'El pedido no ha sido terminado.');
+            }
+          }
+        }
+      ],
+      { cancelable: false }
+    );
+  }}>
+  <Text style={{color:'#fff'}}> Pagar</Text>
+</TouchableHighlight>
+  <TouchableHighlight
+    style={styles.button}
+    activeOpacity={0.6}
+    underlayColor="#DDDDDD"
+    onPress={() => {
+      setSelectedPedido(pedido);
+      setModalVisible(true);
+    }}>
+    <Text style={{color:'#fff'}}> Ver</Text>
+  </TouchableHighlight>
+</View>
                 </View>
               </View>
             </View>
@@ -312,7 +375,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 10,
-    marginLeft: '32%',
+    marginLeft: '0%',
     backgroundColor: 'rgba(245, 133, 0, 1)',
     padding: 10,
     borderRadius: 5,
@@ -320,6 +383,15 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
         height:40,
         alignItems: 'center',
+  },
+  buttonPagar: {
+    marginTop: 10,
+    backgroundColor: 'rgba(245, 133, 0, 1)',
+    padding: 10,
+    borderRadius: 5,
+    width: 100,
+    height: 40,
+    alignItems: 'center',
   },
   centeredView: {
     flex: 1,
